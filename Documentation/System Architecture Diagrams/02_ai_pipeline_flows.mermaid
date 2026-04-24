@@ -1,0 +1,76 @@
+%% CantiereSnap – AI Pipeline Flows
+%% Diagram 2 of 4 – System Architecture Diagrams
+%% v2 – Added: quote metadata logging (FR-QUOTE-006),
+%%       Before/After tagging (FR-PHOTO-003),
+%%       OCR confidence decision point (FR-OCR-004)
+
+flowchart LR
+    subgraph QuotePipeline["AI Quote Generation Pipeline"]
+        Q1["Tradesperson writes job description"]
+        Q2["API Gateway validates request"]
+        Q3["Lambda: Quote Handler"]
+        Q4["Build prompt: system instructions + job description"]
+        Q5["Claude API call"]
+        Q6["Parse response to JSON schema"]
+        Q7["Log metadata: input length, generation time, item count"]
+        Q8["Tradesperson reviews and edits items"]
+        Q9["Generate branded PDF"]
+        Q10["Store PDF in S3"]
+        Q11["Save quote metadata to DynamoDB"]
+        Q12["Send PDF via SES email"]
+
+        Q1 -->|"Natural language input"| Q2
+        Q2 -->|"JWT validated"| Q3
+        Q3 --> Q4
+        Q4 -->|"System prompt + user input"| Q5
+        Q5 -->|"Structured JSON response"| Q6
+        Q6 --> Q7
+        Q7 -->|"Line items, quantities, prices"| Q8
+        Q8 -->|"Approved"| Q9
+        Q9 --> Q10
+        Q9 --> Q11
+        Q11 -->|"Optional"| Q12
+    end
+
+    subgraph PhotoPipeline["AI Photo Description Pipeline"]
+        P1["Tradesperson uploads photo"]
+        P2["Lambda generates presigned URL"]
+        P3["Tag photo as Before or After"]
+        P4["Direct upload to S3"]
+        P5["S3 Event triggers Lambda"]
+        P6["Lambda sends image to Claude API"]
+        P7["Claude generates technical description"]
+        P8["Save metadata + description to DynamoDB"]
+        P9["Tradesperson reviews and edits"]
+
+        P1 --> P2
+        P2 -->|"Presigned URL returned"| P3
+        P3 --> P4
+        P4 -->|"S3 notification"| P5
+        P5 --> P6
+        P6 -->|"Vision analysis"| P7
+        P7 --> P8
+        P8 --> P9
+    end
+
+    subgraph OCRPipeline["OCR Material Extraction Pipeline"]
+        O1["Tradesperson photographs receipt"]
+        O2["Upload image to S3"]
+        O3["Lambda sends to AWS Textract"]
+        O4["Extract text with confidence scores"]
+        O5{"Confidence >= 80%?"}
+        O6["Parse into structured entries"]
+        O7["Display low-confidence warning"]
+        O8["Tradesperson reviews and corrects"]
+        O9["Save material costs to DynamoDB"]
+
+        O1 --> O2
+        O2 --> O3
+        O3 --> O4
+        O4 --> O5
+        O5 -->|"Yes"| O6
+        O5 -->|"No"| O7
+        O7 --> O6
+        O6 -->|"Item name, quantity, cost"| O8
+        O8 --> O9
+    end
