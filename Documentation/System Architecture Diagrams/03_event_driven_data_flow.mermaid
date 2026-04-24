@@ -1,0 +1,126 @@
+%% CantiereSnap – Event-Driven Data Flow
+%% Diagram 3 of 4 – System Architecture Diagrams
+%% v2 – Added: Monthly analytics aggregation (FR-DASH-001 to FR-DASH-004),
+%%       EventBridge Lambda retry policy with exponential backoff (NFR-AVAIL-003)
+%% Covers: EventBridge scheduled triggers (FR-NOTIFY-001, FR-NOTIFY-002),
+%%         S3 event-driven photo processing (FR-PHOTO-004),
+%%         Job status transition logic (FR-JOB-003, FR-JOB-004),
+%%         Invoice creation event chain (FR-INV-001 to FR-INV-004)
+
+flowchart LR
+    subgraph Triggers["Event Sources"]
+        EB_REMIND["EventBridge: Daily 08:00 UTC"]
+        EB_OVERDUE["EventBridge: Daily 09:00 UTC"]
+        EB_MONTHLY["EventBridge: 1st of Month 02:00 UTC"]
+        S3_EVENT["S3: ObjectCreated Event"]
+        API_STATUS["API Gateway: Job Status Change"]
+        API_INVOICE["API Gateway: Invoice Created"]
+    end
+
+    subgraph InvoiceReminder["Invoice Reminder Flow"]
+        LR1["Lambda: Check Invoices Due in 7 Days"]
+        LR2["Query DynamoDB: status=Sent, due_date=today+7"]
+        LR3{"Invoices found?"}
+        LR4["Build reminder email"]
+        LR5["Send via SES"]
+        LR6["Log reminder to DynamoDB"]
+
+        EB_REMIND --> LR1
+        LR1 --> LR2
+        LR2 --> LR3
+        LR3 -->|"Yes"| LR4
+        LR3 -->|"No"| LR_END["No action"]
+        LR4 --> LR5
+        LR5 --> LR6
+    end
+
+    subgraph OverdueAlert["Overdue Payment Alert Flow"]
+        OA1["Lambda: Check Overdue Invoices"]
+        OA2["Query DynamoDB: status=Sent, due_date < today"]
+        OA3{"Overdue found?"}
+        OA4["Update status to Overdue"]
+        OA5["Send alert via SES"]
+        OA6["Flag on dashboard widget"]
+
+        EB_OVERDUE --> OA1
+        OA1 --> OA2
+        OA2 --> OA3
+        OA3 -->|"Yes"| OA4
+        OA3 -->|"No"| OA_END["No action"]
+        OA4 --> OA5
+        OA5 --> OA6
+    end
+
+    subgraph Analytics["Monthly Analytics Aggregation Flow"]
+        MA1["Lambda: Aggregate Monthly Metrics"]
+        MA2["Query DynamoDB: all paid invoices in period"]
+        MA3["Calculate monthly revenue"]
+        MA4["Calculate job completion rate"]
+        MA5["Calculate avg quote-to-invoice time"]
+        MA6["Calculate material cost breakdown"]
+        MA7["Store aggregated metrics to DynamoDB"]
+
+        EB_MONTHLY --> MA1
+        MA1 --> MA2
+        MA2 --> MA3
+        MA3 --> MA4
+        MA4 --> MA5
+        MA5 --> MA6
+        MA6 --> MA7
+    end
+
+    subgraph Retry["Retry Policy — All EventBridge Lambdas"]
+        RT1["Lambda execution fails"]
+        RT2{"Retry count < 2?"}
+        RT3["Wait with exponential backoff"]
+        RT4["Retry execution"]
+        RT5["Log failure to CloudWatch"]
+        RT6["Send error alert via SES"]
+
+        RT1 --> RT2
+        RT2 -->|"Yes"| RT3
+        RT3 --> RT4
+        RT2 -->|"No — max retries reached"| RT5
+        RT5 --> RT6
+    end
+
+    subgraph PhotoEvent["Photo Upload Event Flow"]
+        PE1["S3 ObjectCreated notification"]
+        PE2["Lambda: Photo Processor"]
+        PE3["Send image to Claude API"]
+        PE4["Save description to DynamoDB"]
+
+        S3_EVENT --> PE1
+        PE1 --> PE2
+        PE2 --> PE3
+        PE3 --> PE4
+    end
+
+    subgraph JobTransition["Job Status Transition Flow"]
+        JT1["Lambda: Update Job Status"]
+        JT2["Record timestamp in DynamoDB"]
+        JT3{"Status = Completed?"}
+        JT4["Enable invoice generation"]
+        JT5["Return updated Kanban state"]
+
+        API_STATUS --> JT1
+        JT1 --> JT2
+        JT2 --> JT3
+        JT3 -->|"Yes"| JT4
+        JT3 -->|"No"| JT5
+        JT4 --> JT5
+    end
+
+    subgraph InvoiceEvent["Invoice Creation Event Flow"]
+        IE1["Lambda: Generate FatturaPA XML"]
+        IE2["Store XML in S3"]
+        IE3["Save invoice metadata to DynamoDB"]
+        IE4["Update job status to Invoiced"]
+        IE5["Send invoice email via SES"]
+
+        API_INVOICE --> IE1
+        IE1 --> IE2
+        IE2 --> IE3
+        IE3 --> IE4
+        IE4 -->|"Optional"| IE5
+    end
