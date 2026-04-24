@@ -1,0 +1,74 @@
+%% CantiereSnap – High-Level AWS Architecture
+%% Diagram 1 of 4 – System Architecture Diagrams
+
+flowchart LR
+    subgraph Client["Client Layer"]
+        PWA["React/Next.js PWA"]
+    end
+
+    subgraph CDN["Static Hosting"]
+        CF["CloudFront"]
+        S3Static["S3 Static Assets"]
+    end
+
+    subgraph Auth["Authentication"]
+        Cognito["AWS Cognito"]
+    end
+
+    subgraph API["API Layer"]
+        APIGW["API Gateway REST"]
+    end
+
+    subgraph Compute["Compute Layer"]
+        LambdaJobs["Lambda: Jobs CRUD"]
+        LambdaQuote["Lambda: Quote Generation"]
+        LambdaPhoto["Lambda: Photo Upload"]
+        LambdaOCR["Lambda: OCR Processing"]
+        LambdaInvoice["Lambda: Invoice Generation"]
+        LambdaNotify["Lambda: Notifications"]
+    end
+
+    subgraph Storage["Storage Layer"]
+        DynamoDB["DynamoDB Single-Table"]
+        S3Data["S3: Photos, PDFs, XML"]
+    end
+
+    subgraph AI["AI Services"]
+        Claude["Anthropic Claude API"]
+        Textract["AWS Textract"]
+    end
+
+    subgraph Messaging["Messaging"]
+        SES["AWS SES"]
+        SNS["AWS SNS"]
+    end
+
+    subgraph Scheduling["Scheduling"]
+        EB["EventBridge"]
+    end
+
+    PWA -->|"HTTPS"| CF
+    CF --> S3Static
+    PWA -->|"REST API Calls"| APIGW
+    APIGW -->|"JWT Validation"| Cognito
+    APIGW --> LambdaJobs
+    APIGW --> LambdaQuote
+    APIGW --> LambdaPhoto
+    APIGW --> LambdaOCR
+    APIGW --> LambdaInvoice
+
+    LambdaJobs --> DynamoDB
+    LambdaQuote --> Claude
+    LambdaQuote --> S3Data
+    LambdaQuote --> DynamoDB
+    LambdaPhoto --> S3Data
+    LambdaPhoto --> Claude
+    LambdaPhoto --> DynamoDB
+    LambdaOCR --> Textract
+    LambdaOCR --> DynamoDB
+    LambdaInvoice --> S3Data
+    LambdaInvoice --> DynamoDB
+
+    LambdaNotify --> SES
+    LambdaNotify --> SNS
+    EB -->|"Cron Triggers"| LambdaNotify
