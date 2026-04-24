@@ -1,0 +1,63 @@
+%% CantiereSnap – Auth Flow (Cognito + JWT)
+%% Diagram 4 of 4 – System Architecture Diagrams
+%% Covers: Registration (FR-AUTH-001, FR-AUTH-002),
+%%         Login with JWT (FR-AUTH-003),
+%%         API Gateway Cognito Authorizer (FR-AUTH-004, NFR-SEC-002),
+%%         DynamoDB data isolation by user ID (NFR-SEC-004),
+%%         Token refresh with 30-day session persistence (FR-AUTH-005)
+
+sequenceDiagram
+    participant U as Tradesperson (PWA)
+    participant AG as API Gateway
+    participant C as AWS Cognito
+    participant SES as AWS SES
+    participant L as Lambda
+    participant DB as DynamoDB
+
+    rect rgb(240, 240, 235)
+    Note over U,SES: Registration Flow (FR-AUTH-001, FR-AUTH-002)
+    U->>AG: POST /auth/register (email, password)
+    AG->>C: CreateUser (email, password min 8 chars)
+    C->>SES: Send verification email
+    SES-->>U: Verification email with link
+    U->>C: Click verification link
+    C-->>U: Account confirmed
+    end
+
+    rect rgb(240, 240, 235)
+    Note over U,C: Login Flow (FR-AUTH-003)
+    U->>AG: POST /auth/login (email, password)
+    AG->>C: InitiateAuth
+    C-->>AG: Access Token (1hr) + Refresh Token (30 days)
+    AG-->>U: Store tokens locally
+    end
+
+    rect rgb(240, 240, 235)
+    Note over U,DB: Authenticated API Request (FR-AUTH-004)
+    U->>AG: GET /jobs (Authorization: Bearer JWT)
+    AG->>C: Validate JWT token
+    alt Token valid
+        C-->>AG: Token verified, claims extracted
+        AG->>L: Forward request with user ID
+        L->>DB: Query jobs for user ID (data isolation)
+        DB-->>L: User jobs only
+        L-->>AG: Response payload
+        AG-->>U: 200 OK + data
+    else Token expired
+        C-->>AG: Token invalid
+        AG-->>U: 401 Unauthorized
+    end
+    end
+
+    rect rgb(240, 240, 235)
+    Note over U,C: Token Refresh Flow (FR-AUTH-005)
+    U->>AG: POST /auth/refresh (refresh token)
+    AG->>C: InitiateAuth (REFRESH_TOKEN_AUTH)
+    alt Refresh token valid (within 30 days)
+        C-->>AG: New Access Token
+        AG-->>U: Store new access token
+    else Refresh token expired
+        C-->>AG: Token expired error
+        AG-->>U: 401 — Redirect to login
+    end
+    end
