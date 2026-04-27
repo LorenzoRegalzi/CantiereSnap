@@ -1,0 +1,159 @@
+%% CantiereSnap – DynamoDB Entity Relationships
+%% Diagram 5 of 5 – System Architecture Diagrams
+%% Single-table design: all entities in CantiereSnapTable
+%% Two partition strategies: User Partition (PK = USER#userId)
+%%                           Job Partition (PK = JOB#userId#jobId)
+%% GSI-1 (StatusIndex): status-based filtering for Kanban and invoice tracking
+%% GSI-2 (DueDateIndex): date-based queries for notifications and dashboard
+
+erDiagram
+    UserProfile {
+        string PK "USER#userId"
+        string SK "PROFILE"
+        string email
+        string fullName
+        string businessName
+        string partitaIva
+        string codiceFiscale
+        string regimeFiscale
+        map address
+        string phone
+    }
+
+    Client {
+        string PK "USER#userId"
+        string SK "CLIENT#clientId"
+        string GSI1PK "USER#userId"
+        string GSI1SK "CLIENT#clientName"
+        string clientName
+        string email
+        string codiceFiscale
+        string partitaIva
+        map address
+    }
+
+    JobCounter {
+        string PK "USER#userId"
+        string SK "COUNTER#JOB"
+        number lastJobId
+    }
+
+    Job {
+        string PK "USER#userId"
+        string SK "JOB#jobId"
+        string GSI1PK "USER#userId"
+        string GSI1SK "JOB#status#createdAt"
+        string GSI2PK "USER_JOBS#userId"
+        string GSI2SK "createdAt"
+        number jobId
+        string clientId
+        string description
+        string status
+        string targetDate
+    }
+
+    StatusHistory {
+        string PK "JOB#userId#jobId"
+        string SK "STATUS#timestamp"
+        string fromStatus
+        string toStatus
+        string changedAt
+    }
+
+    Quote {
+        string PK "JOB#userId#jobId"
+        string SK "QUOTE"
+        number totalAmount
+        string inputText
+        number generationTimeMs
+        string pdfS3Key
+        string status
+    }
+
+    QuoteItem {
+        string PK "JOB#userId#jobId"
+        string SK "QUOTE#ITEM#seq"
+        string description
+        number quantity
+        string unit
+        number unitPrice
+        number lineTotal
+    }
+
+    Photo {
+        string PK "JOB#userId#jobId"
+        string SK "PHOTO#photoId"
+        string s3Key
+        string tag "Before or After"
+        string aiDescription
+        boolean aiDescriptionEdited
+    }
+
+    Material {
+        string PK "JOB#userId#jobId"
+        string SK "MATERIAL#materialId"
+        string itemName
+        number quantity
+        number cost
+        number confidence
+        string sourceS3Key
+        boolean verified
+    }
+
+    Invoice {
+        string PK "JOB#userId#jobId"
+        string SK "INVOICE"
+        string GSI1PK "USER#userId"
+        string GSI1SK "INV#status#createdAt"
+        string GSI2PK "INV_STATUS#status"
+        string GSI2SK "dueDate"
+        string invoiceNumber
+        number totalAmount
+        number vatAmount
+        string status
+        string xmlS3Key
+        string dueDate
+    }
+
+    InvoiceItem {
+        string PK "JOB#userId#jobId"
+        string SK "INVOICE#ITEM#seq"
+        string description
+        number quantity
+        string unit
+        number unitPrice
+        number lineTotal
+    }
+
+    MonthlyAnalytics {
+        string PK "USER#userId"
+        string SK "ANALYTICS#YYYY-MM"
+        number totalRevenue
+        number jobsCompleted
+        number completionRate
+        number avgQuoteToInvoiceDays
+        number totalMaterialCost
+    }
+
+    NotificationLog {
+        string PK "USER#userId"
+        string SK "NOTIFY#timestamp"
+        string type
+        string channel
+        string status
+        number ttl
+    }
+
+    UserProfile ||--o{ Client : "manages"
+    UserProfile ||--|| JobCounter : "owns"
+    UserProfile ||--o{ Job : "creates"
+    UserProfile ||--o{ MonthlyAnalytics : "aggregates"
+    UserProfile ||--o{ NotificationLog : "receives"
+    Client ||--o{ Job : "assigned to"
+    Job ||--o{ StatusHistory : "tracks transitions"
+    Job ||--o| Quote : "generates"
+    Quote ||--o{ QuoteItem : "contains"
+    Job ||--o{ Photo : "documents"
+    Job ||--o{ Material : "logs costs"
+    Job ||--o| Invoice : "produces"
+    Invoice ||--o{ InvoiceItem : "contains"
