@@ -5,74 +5,77 @@
 %%                           Job Partition (PK = JOB#userId#jobId)
 %% GSI-1 (StatusIndex): status-based filtering for Kanban and invoice tracking
 %% GSI-2 (DueDateIndex): date-based queries for notifications and dashboard
+%%
+%% Note: DynamoDB key attributes (PK, SK, GSI1PK, GSI1SK, GSI2PK, GSI2SK)
+%% are documented in 05_dynamodb_schema_design.md — this diagram shows
+%% business attributes and entity relationships only.
 
 erDiagram
     UserProfile {
-        string PK "USER#userId"
-        string SK "PROFILE"
+        string userId PK
         string email
         string fullName
         string businessName
         string partitaIva
         string codiceFiscale
         string regimeFiscale
-        map address
         string phone
+        string createdAt
     }
 
     Client {
-        string PK "USER#userId"
-        string SK "CLIENT#clientId"
-        string GSI1PK "USER#userId"
-        string GSI1SK "CLIENT#clientName"
+        string clientId PK
+        string userId FK
         string clientName
         string email
+        string phone
         string codiceFiscale
         string partitaIva
-        map address
+        string createdAt
     }
 
     JobCounter {
-        string PK "USER#userId"
-        string SK "COUNTER#JOB"
+        string userId PK
         number lastJobId
     }
 
     Job {
-        string PK "USER#userId"
-        string SK "JOB#jobId"
-        string GSI1PK "USER#userId"
-        string GSI1SK "JOB#status#createdAt"
-        string GSI2PK "USER_JOBS#userId"
-        string GSI2SK "createdAt"
-        number jobId
-        string clientId
+        number jobId PK
+        string userId FK
+        string clientId FK
+        string clientName
         string description
-        string status
+        string address
         string targetDate
+        string status
+        string createdAt
+        string updatedAt
     }
 
     StatusHistory {
-        string PK "JOB#userId#jobId"
-        string SK "STATUS#timestamp"
+        string jobId FK
+        string timestamp PK
         string fromStatus
         string toStatus
         string changedAt
     }
 
     Quote {
-        string PK "JOB#userId#jobId"
-        string SK "QUOTE"
+        string jobId PK
         number totalAmount
+        string currency
         string inputText
+        number inputLength
         number generationTimeMs
+        number itemCount
         string pdfS3Key
         string status
+        string createdAt
     }
 
     QuoteItem {
-        string PK "JOB#userId#jobId"
-        string SK "QUOTE#ITEM#seq"
+        string jobId FK
+        number seq PK
         string description
         number quantity
         string unit
@@ -81,43 +84,47 @@ erDiagram
     }
 
     Photo {
-        string PK "JOB#userId#jobId"
-        string SK "PHOTO#photoId"
+        string photoId PK
+        string jobId FK
         string s3Key
-        string tag "Before or After"
+        string tag
+        string mimeType
+        number sizeBytes
         string aiDescription
-        boolean aiDescriptionEdited
+        string uploadedAt
     }
 
     Material {
-        string PK "JOB#userId#jobId"
-        string SK "MATERIAL#materialId"
+        string materialId PK
+        string jobId FK
         string itemName
         number quantity
         number cost
         number confidence
         string sourceS3Key
-        boolean verified
+        string createdAt
     }
 
     Invoice {
-        string PK "JOB#userId#jobId"
-        string SK "INVOICE"
-        string GSI1PK "USER#userId"
-        string GSI1SK "INV#status#createdAt"
-        string GSI2PK "INV_STATUS#status"
-        string GSI2SK "dueDate"
-        string invoiceNumber
+        string invoiceNumber PK
+        string jobId FK
+        string userId FK
+        string clientName
+        string clientEmail
         number totalAmount
         number vatAmount
+        number vatRate
         string status
-        string xmlS3Key
         string dueDate
+        string xmlS3Key
+        string paymentTerms
+        string createdAt
+        string paidAt
     }
 
     InvoiceItem {
-        string PK "JOB#userId#jobId"
-        string SK "INVOICE#ITEM#seq"
+        string jobId FK
+        number seq PK
         string description
         number quantity
         string unit
@@ -126,26 +133,32 @@ erDiagram
     }
 
     MonthlyAnalytics {
-        string PK "USER#userId"
-        string SK "ANALYTICS#YYYY-MM"
+        string userId FK
+        string month PK
         number totalRevenue
+        number jobsCreated
         number jobsCompleted
         number completionRate
         number avgQuoteToInvoiceDays
         number totalMaterialCost
+        number invoicesPaid
+        number invoicesOverdue
     }
 
     NotificationLog {
-        string PK "USER#userId"
-        string SK "NOTIFY#timestamp"
+        string userId FK
+        string timestamp PK
         string type
         string channel
+        string recipientEmail
+        string recipientPhone
+        string invoiceNumber
         string status
         number ttl
     }
 
-    UserProfile ||--o{ Client : "manages"
     UserProfile ||--|| JobCounter : "owns"
+    UserProfile ||--o{ Client : "manages"
     UserProfile ||--o{ Job : "creates"
     UserProfile ||--o{ MonthlyAnalytics : "aggregates"
     UserProfile ||--o{ NotificationLog : "receives"
