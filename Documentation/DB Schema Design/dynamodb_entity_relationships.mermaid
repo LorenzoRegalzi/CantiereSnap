@@ -1,18 +1,6 @@
-%% CantiereSnap – DynamoDB Entity Relationships
-%% Diagram 5 of 5 – System Architecture Diagrams
-%% Single-table design: all entities in CantiereSnapTable
-%% Two partition strategies: User Partition (PK = USER#userId)
-%%                           Job Partition (PK = JOB#userId#jobId)
-%% GSI-1 (StatusIndex): status-based filtering for Kanban and invoice tracking
-%% GSI-2 (DueDateIndex): date-based queries for notifications and dashboard
-%%
-%% Note: DynamoDB key attributes (PK, SK, GSI1PK, GSI1SK, GSI2PK, GSI2SK)
-%% are documented in 05_dynamodb_schema_design.md — this diagram shows
-%% business attributes and entity relationships only.
-
 erDiagram
     UserProfile {
-        string userId PK
+        string userId
         string email
         string fullName
         string businessName
@@ -20,153 +8,131 @@ erDiagram
         string codiceFiscale
         string regimeFiscale
         string phone
-        string createdAt
     }
 
     Client {
-        string clientId PK
-        string userId FK
+        string clientId
+        string userId
         string clientName
         string email
         string phone
         string codiceFiscale
-        string partitaIva
-        string createdAt
     }
 
     JobCounter {
-        string userId PK
-        number lastJobId
+        string userId
+        int lastJobId
     }
 
     Job {
-        number jobId PK
-        string userId FK
-        string clientId FK
+        int jobId
+        string userId
+        string clientId
         string clientName
         string description
         string address
         string targetDate
         string status
-        string createdAt
-        string updatedAt
     }
 
     StatusHistory {
-        string jobId FK
-        string timestamp PK
+        string jobId
+        string timestamp
         string fromStatus
         string toStatus
-        string changedAt
     }
 
     Quote {
-        string jobId PK
-        number totalAmount
+        string jobId
+        int totalAmount
         string currency
         string inputText
-        number inputLength
-        number generationTimeMs
-        number itemCount
+        int generationTimeMs
         string pdfS3Key
         string status
-        string createdAt
     }
 
     QuoteItem {
-        string jobId FK
-        number seq PK
+        string jobId
+        int seq
         string description
-        number quantity
+        int quantity
         string unit
-        number unitPrice
-        number lineTotal
+        int unitPrice
+        int lineTotal
     }
 
     Photo {
-        string photoId PK
-        string jobId FK
+        string photoId
+        string jobId
         string s3Key
         string tag
         string mimeType
-        number sizeBytes
+        int sizeBytes
         string aiDescription
-        string uploadedAt
     }
 
     Material {
-        string materialId PK
-        string jobId FK
+        string materialId
+        string jobId
         string itemName
-        number quantity
-        number cost
-        number confidence
+        int quantity
+        int cost
+        int confidence
         string sourceS3Key
-        string createdAt
     }
 
     Invoice {
-        string invoiceNumber PK
-        string jobId FK
-        string userId FK
+        string invoiceNumber
+        string jobId
+        string userId
         string clientName
-        string clientEmail
-        number totalAmount
-        number vatAmount
-        number vatRate
+        int totalAmount
+        int vatAmount
+        int vatRate
         string status
         string dueDate
         string xmlS3Key
-        string paymentTerms
-        string createdAt
-        string paidAt
     }
 
     InvoiceItem {
-        string jobId FK
-        number seq PK
+        string jobId
+        int seq
         string description
-        number quantity
+        int quantity
         string unit
-        number unitPrice
-        number lineTotal
+        int unitPrice
+        int lineTotal
     }
 
     MonthlyAnalytics {
-        string userId FK
-        string month PK
-        number totalRevenue
-        number jobsCreated
-        number jobsCompleted
-        number completionRate
-        number avgQuoteToInvoiceDays
-        number totalMaterialCost
-        number invoicesPaid
-        number invoicesOverdue
+        string userId
+        string month
+        int totalRevenue
+        int jobsCreated
+        int jobsCompleted
+        int totalMaterialCost
     }
 
     NotificationLog {
-        string userId FK
-        string timestamp PK
+        string userId
+        string timestamp
         string type
         string channel
-        string recipientEmail
-        string recipientPhone
-        string invoiceNumber
         string status
-        number ttl
+        int ttl
     }
 
-    UserProfile ||--|| JobCounter : "owns"
-    UserProfile ||--o{ Client : "manages"
-    UserProfile ||--o{ Job : "creates"
-    UserProfile ||--o{ MonthlyAnalytics : "aggregates"
-    UserProfile ||--o{ NotificationLog : "receives"
-    Client ||--o{ Job : "assigned to"
-    Job ||--o{ StatusHistory : "tracks transitions"
-    Job ||--o| Quote : "generates"
-    Quote ||--o{ QuoteItem : "contains"
-    Job ||--o{ Photo : "documents"
-    Job ||--o{ Material : "logs costs"
-    Job ||--o| Invoice : "produces"
-    Invoice ||--o{ InvoiceItem : "contains"
+    UserProfile ||--|| JobCounter : owns
+    UserProfile ||--o{ Client : manages
+    UserProfile ||--o{ Job : creates
+    UserProfile ||--o{ MonthlyAnalytics : aggregates
+    UserProfile ||--o{ NotificationLog : receives
+    Client ||--o{ Job : assigns
+    Job ||--o{ StatusHistory : tracks
+    Job ||--o{ Quote : generates
+    Quote ||--o{ QuoteItem : contains
+    Job ||--o{ Photo : documents
+    Job ||--o{ Material : logs
+    Job ||--o{ Invoice : produces
+    Invoice ||--o{ InvoiceItem : contains
