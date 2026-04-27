@@ -86,7 +86,7 @@
 |---|---|---|
 | ✅ Software Requirements Specification (SRS) | 25 Apr | Documentation |
 | ✅ System Architecture Diagrams | 26 Apr | Documentation |
-| DynamoDB Single-Table Schema Design | 27 Apr | Documentation |
+| ✅ DynamoDB Single-Table Schema Design | 27 Apr | Documentation |
 | REST API Specification | 28 Apr | Documentation |
 | Low-Fidelity UI/UX Wireframes | 29 Apr | Documentation |
 | Test Plan | 30 Apr | Documentation |
@@ -116,11 +116,16 @@
 > - `03_event_driven_data_flow.mermaid` (v2 — added FR-DASH-001→004 monthly analytics aggregation, NFR-AVAIL-003 retry with exponential backoff)
 > - `04_auth_flow_cognito_jwt.mermaid`
 
-**DynamoDB Single-Table Schema Design** – 27 Apr
+**DynamoDB Single-Table Schema Design** – 27 Apr ✅ Completed
 - Define entities: Job, Client, Quote, Invoice, Photo
 - Define primary keys (PK/SK)
 - Define GSI for secondary access patterns
 - Document all access patterns
+
+> ✅ Completed – 27 Apr 2026
+> 📄 Files (GitHub repo `/docs/`):
+> - `05_dynamodb_schema_design.md` (v1.1 — 13 entities, 2 GSIs, 40 access patterns, transaction patterns, known limitations)
+> - `05_dynamodb_entity_relationships.mermaid` (ER diagram)
 
 **REST API Specification** – 28 Apr
 - Define all resource endpoints (Jobs, Clients, Quotes, Invoices)
