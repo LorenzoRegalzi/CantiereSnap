@@ -17,7 +17,7 @@
 
 | Phase | Period | Status |
 |---|---|---|
-| Documentation | April 2026 | 🔲 In progress |
+| Documentation | April 2026 | ✅ Nearly complete (5/6 cards done) |
 | Backend Development | May 2026 | 🔲 Not started |
 | Frontend Development | June 2026 | 🔲 Not started |
 | Testing & Thesis Writing | July 2026 | 🔲 Not started |
@@ -88,7 +88,7 @@
 | ✅ System Architecture Diagrams | 26 Apr | Documentation |
 | ✅ DynamoDB Single-Table Schema Design | 27 Apr | Documentation |
 | ✅ REST API Specification | 28 Apr | Documentation |
-| Low-Fidelity UI/UX Wireframes | 29 Apr | Documentation |
+| ✅ Low-Fidelity UI/UX Wireframes | 29 Apr | Documentation |
 | Test Plan | 30 Apr | Documentation |
 
 **Card details:**
@@ -136,13 +136,18 @@
 > ✅ Completed – 28 Apr 2026
 > 📄 GitHub: `/docs/rest_api_specification.md` (37 endpoints, full traceability to 39 FRs and 40 DynamoDB access patterns, pagination, error handling, EventBridge automated triggers)
 
-**Low-Fidelity UI/UX Wireframes** – 29 Apr
+**Low-Fidelity UI/UX Wireframes** – 29 Apr ✅ Completed
 - Login / Register screen
 - Job Pipeline (Kanban view)
 - Quote generation form
 - Photo gallery per job
 - Electronic invoice module
 - Dashboard & Analytics
+
+> ✅ Completed – 28 Apr 2026
+> 📄 File: `CantiereSnap_Wireframes_bundle.html` (interactive lo-fi wireframes, 6 screens)
+> 📄 GitHub: `/docs/wireframes/index.html` (for GitHub Pages rendering)
+> 🔗 Screens: Login/Register (FR-AUTH-001), Job Pipeline Kanban (FR-JOB), AI Quote Generation (FR-QUOTE-001), Photo Gallery (FR-PHOTO-001), Electronic Invoice (FR-INV-001), Dashboard & Analytics (FR-DASH-001→005)
 
 **Test Plan** – 30 Apr
 - Unit testing strategy (Lambda functions)
@@ -335,7 +340,7 @@
 - Define user validation protocol
 - Conduct sessions (observe task completion)
 - Collect feedback on quote generation accuracy
-- Document findings for thesis
+- Document findings
 
 **Performance Benchmark – Lambda vs Fargate** – 15 Jul
 - Deploy equivalent workload on Fargate
