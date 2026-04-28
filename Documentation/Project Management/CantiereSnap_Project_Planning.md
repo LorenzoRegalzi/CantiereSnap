@@ -87,7 +87,7 @@
 | ✅ Software Requirements Specification (SRS) | 25 Apr | Documentation |
 | ✅ System Architecture Diagrams | 26 Apr | Documentation |
 | ✅ DynamoDB Single-Table Schema Design | 27 Apr | Documentation |
-| REST API Specification | 28 Apr | Documentation |
+| ✅ REST API Specification | 28 Apr | Documentation |
 | Low-Fidelity UI/UX Wireframes | 29 Apr | Documentation |
 | Test Plan | 30 Apr | Documentation |
 
@@ -127,11 +127,14 @@
 > - `05_dynamodb_schema_design.md` (v1.1 — 13 entities, 2 GSIs, 40 access patterns, transaction patterns, known limitations)
 > - `05_dynamodb_entity_relationships.mermaid` (ER diagram)
 
-**REST API Specification** – 28 Apr
+**REST API Specification** – 28 Apr ✅ Completed
 - Define all resource endpoints (Jobs, Clients, Quotes, Invoices)
 - Request/response schemas (JSON)
 - Auth headers (JWT Bearer)
 - Error codes and messages
+
+> ✅ Completed – 28 Apr 2026
+> 📄 GitHub: `/docs/rest_api_specification.md` (37 endpoints, full traceability to 39 FRs and 40 DynamoDB access patterns, pagination, error handling, EventBridge automated triggers)
 
 **Low-Fidelity UI/UX Wireframes** – 29 Apr
 - Login / Register screen
