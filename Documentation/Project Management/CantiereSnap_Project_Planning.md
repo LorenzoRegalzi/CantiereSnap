@@ -17,7 +17,7 @@
 
 | Phase | Period | Status |
 |---|---|---|
-| Documentation | April 2026 | ✅ Nearly complete (5/6 cards done) |
+| Documentation | April 2026 | ✅ Complete (6/6 cards done) |
 | Backend Development | May 2026 | 🔲 Not started |
 | Frontend Development | June 2026 | 🔲 Not started |
 | Testing & Thesis Writing | July 2026 | 🔲 Not started |
@@ -89,7 +89,7 @@
 | ✅ DynamoDB Single-Table Schema Design | 27 Apr | Documentation |
 | ✅ REST API Specification | 28 Apr | Documentation |
 | ✅ Low-Fidelity UI/UX Wireframes | 29 Apr | Documentation |
-| Test Plan | 30 Apr | Documentation |
+| ✅ Test Plan | 30 Apr | Documentation |
 
 **Card details:**
 
@@ -149,12 +149,16 @@
 > 📄 GitHub: `/docs/wireframes/index.html` (for GitHub Pages rendering)
 > 🔗 Screens: Login/Register (FR-AUTH-001), Job Pipeline Kanban (FR-JOB), AI Quote Generation (FR-QUOTE-001), Photo Gallery (FR-PHOTO-001), Electronic Invoice (FR-INV-001), Dashboard & Analytics (FR-DASH-001→005)
 
-**Test Plan** – 30 Apr
+**Test Plan** – 30 Apr ✅ Completed
 - Unit testing strategy (Lambda functions)
 - Integration testing strategy (API Gateway)
 - User validation protocol (5–10 tradespeople)
 - Performance benchmarking plan (Lambda vs Fargate)
 - Acceptance criteria definition
+
+> ✅ Completed – 28 Apr 2026
+> 📄 Document: CantiereSnap_Test_Plan.docx (8 sections: unit testing with Jest, integration testing with Postman/Newman, user validation protocol for 5–10 artigiani, Lambda vs Fargate benchmark, acceptance criteria matrix)
+> 📄 GitHub: `/docs/CantiereSnap_Test_Plan.md` (markdown version for repo)
 
 ---
 
