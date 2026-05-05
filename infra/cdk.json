@@ -1,0 +1,29 @@
+{
+  "app": "npx ts-node --prefer-ts-exts bin/app.ts",
+  "watch": {
+    "include": ["**"],
+    "exclude": [
+      "README.md",
+      "cdk*.json",
+      "**/*.d.ts",
+      "**/*.js",
+      "tsconfig.json",
+      "package*.json",
+      "yarn.lock",
+      "node_modules",
+      "dist"
+    ]
+  },
+  "context": {
+    "staging": {
+      "account": "ACCOUNT_ID_PLACEHOLDER",
+      "region": "eu-south-1",
+      "sesFromEmail": "noreply-staging@cantieresnap.it"
+    },
+    "production": {
+      "account": "ACCOUNT_ID_PLACEHOLDER",
+      "region": "eu-south-1",
+      "sesFromEmail": "noreply@cantieresnap.it"
+    }
+  }
+}

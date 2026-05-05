@@ -1,0 +1,10 @@
+{
+  "name": "cantieresnap-backend",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.0",
+    "@types/node": "^20.0.0",
+    "typescript": "~5.4.0"
+  }
+}
