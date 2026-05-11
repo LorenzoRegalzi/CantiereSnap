@@ -16,12 +16,12 @@
   },
   "context": {
     "staging": {
-      "account": "ACCOUNT_ID_PLACEHOLDER",
+      "account": "491545415092",
       "region": "eu-south-1",
       "sesFromEmail": "noreply-staging@cantieresnap.it"
     },
     "production": {
-      "account": "ACCOUNT_ID_PLACEHOLDER",
+      "account": "491545415092",
       "region": "eu-south-1",
       "sesFromEmail": "noreply@cantieresnap.it"
     }

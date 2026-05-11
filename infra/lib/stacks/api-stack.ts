@@ -7,6 +7,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejsFn from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 
 interface ApiStackProps extends cdk.StackProps {
@@ -21,19 +22,27 @@ export class ApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
-    const handlersDir = path.join(__dirname, '../../../../backend/handlers');
+    const handlersDir = path.join(__dirname, '../../../backend/handlers');
+    const backendRoot = path.join(__dirname, '../../../backend');
+
+    const anthropicApiKey = ssm.StringParameter.valueForStringParameter(
+      this,
+      `/cantieresnap/${props.environment}/anthropic-api-key`,
+    );
 
     const commonEnv: Record<string, string> = {
       TABLE_NAME: props.table.tableName,
       BUCKET_NAME: props.bucket.bucketName,
       USER_POOL_ID: props.userPool.userPoolId,
-      USER_POOL_CLIENT_ID: props.userPoolClientId,
+      CLIENT_ID: props.userPoolClientId,
       ENVIRONMENT: props.environment,
     };
 
     const fnDefaults: Partial<nodejsFn.NodejsFunctionProps> = {
       runtime: lambda.Runtime.NODEJS_20_X,
       environment: commonEnv,
+      projectRoot: backendRoot,
+      depsLockFilePath: path.join(backendRoot, 'package-lock.json'),
       bundling: { minify: true, sourceMap: false },
     };
 
@@ -49,9 +58,26 @@ export class ApiStack extends cdk.Stack {
     const authFn = mkFn('AuthFn', 'auth.handler.ts');
     const jobsFn = mkFn('JobsFn', 'jobs.handler.ts');
     const clientsFn = mkFn('ClientsFn', 'clients.handler.ts');
-    const quotesFn = mkFn('QuotesFn', 'quotes.handler.ts');
+    const quotesFn = mkFn('QuotesFn', 'quotes.handler.ts', {
+      environment: { ...commonEnv, ANTHROPIC_API_KEY: anthropicApiKey },
+      timeout: cdk.Duration.seconds(60),
+      bundling: {
+        minify: true,
+        sourceMap: false,
+        commandHooks: {
+          afterBundling: (inputDir: string, outputDir: string): string[] => [
+            `cp -r ${inputDir}/node_modules/pdfkit/js/data ${outputDir}/data`,
+          ],
+          beforeBundling: () => [],
+          beforeInstall: () => [],
+        },
+      },
+    });
     const photosFn = mkFn('PhotosFn', 'photos.handler.ts');
-    const ocrFn = mkFn('OcrFn', 'ocr.handler.ts');
+    const ocrFn = mkFn('OcrFn', 'ocr.handler.ts', {
+      environment: { ...commonEnv, ANTHROPIC_API_KEY: anthropicApiKey },
+      timeout: cdk.Duration.seconds(60),
+    });
     const invoicesFn = mkFn('InvoicesFn', 'invoices.handler.ts');
     const dashboardFn = mkFn('DashboardFn', 'dashboard.handler.ts');
     const notificationsFn = mkFn('NotificationsFn', 'notifications.handler.ts');
@@ -82,13 +108,7 @@ export class ApiStack extends cdk.Stack {
     props.bucket.grantReadWrite(photosFn);   // presigned GET (download) + PUT (upload)
     props.bucket.grantReadWrite(quotesFn);   // PDF read/write
     props.bucket.grantReadWrite(invoicesFn); // FatturaPA XML read/write
-    props.bucket.grantReadWrite(ocrFn);      // receipt image read for Textract
-
-    // Textract — no resource-level restriction available, must use *
-    ocrFn.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['textract:AnalyzeDocument', 'textract:DetectDocumentText'],
-      resources: ['*'],
-    }));
+    props.bucket.grantReadWrite(ocrFn);      // receipt image read for Claude Vision
 
     // ── API Gateway ──────────────────────────────────────────────────────────
     const api = new apigateway.RestApi(this, 'Api', {
@@ -163,8 +183,12 @@ export class ApiStack extends cdk.Stack {
     // /jobs/{jobId}/photos
     const photosRes = jobRes.addResource('photos');
     photosRes.addResource('upload-url').addMethod('POST', int(photosFn), auth);
+    photosRes.addMethod('POST', int(photosFn), auth);
     photosRes.addMethod('GET', int(photosFn), auth);
-    photosRes.addResource('{photoId}').addMethod('PATCH', int(photosFn), auth);
+    const photoRes = photosRes.addResource('{photoId}');
+    photoRes.addMethod('GET', int(photosFn), auth);
+    photoRes.addMethod('PATCH', int(photosFn), auth);
+    photoRes.addMethod('DELETE', int(photosFn), auth);
 
     // /jobs/{jobId}/materials
     const materialsRes = jobRes.addResource('materials');

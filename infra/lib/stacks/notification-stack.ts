@@ -23,7 +23,8 @@ export class NotificationStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: NotificationStackProps) {
     super(scope, id, props);
 
-    const handlersDir = path.join(__dirname, '../../../../backend/handlers');
+    const handlersDir = path.join(__dirname, '../../../backend/handlers');
+    const backendRoot = path.join(__dirname, '../../../backend');
 
     const notificationsTopic = new sns.Topic(this, 'NotificationsTopic', {
       topicName: `CantiereSnap-notifications-${props.environment}`,
@@ -43,23 +44,28 @@ export class NotificationStack extends cdk.Stack {
       ENVIRONMENT: props.environment,
     };
 
+    const fnBase: Partial<nodejsFn.NodejsFunctionProps> = {
+      runtime: lambda.Runtime.NODEJS_20_X,
+      projectRoot: backendRoot,
+      depsLockFilePath: path.join(backendRoot, 'package-lock.json'),
+      bundling: { minify: true, sourceMap: false },
+    };
+
     this.notificationSenderFn = new nodejsFn.NodejsFunction(this, 'NotificationSenderFn', {
+      ...fnBase,
       entry: path.join(handlersDir, 'notification-sender.handler.ts'),
       handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
       environment: senderEnv,
-      bundling: { minify: true, sourceMap: false },
     });
 
     this.monthlyAnalyticsFn = new nodejsFn.NodejsFunction(this, 'MonthlyAnalyticsFn', {
+      ...fnBase,
       entry: path.join(handlersDir, 'monthly-analytics.handler.ts'),
       handler: 'handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
       environment: {
         TABLE_NAME: props.table.tableName,
         ENVIRONMENT: props.environment,
       },
-      bundling: { minify: true, sourceMap: false },
     });
 
     // DynamoDB: sender reads invoices and logs notifications; analytics reads/writes aggregates
