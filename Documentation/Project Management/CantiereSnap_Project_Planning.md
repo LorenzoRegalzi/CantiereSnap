@@ -18,7 +18,7 @@
 | Phase | Period | Status |
 |---|---|---|
 | Documentation | April 2026 | ✅ Complete (6/6 cards done) |
-| Backend Development | May 2026 | 🔲 Not started |
+| Backend Development | May 2026 | ✅ Complete (9/9 cards done) |
 | Frontend Development | June 2026 | 🔲 Not started |
 | Testing & Thesis Writing | July 2026 | 🔲 Not started |
 | Review & Submission | August 2026 (buffer) | 🔲 Not started |
@@ -166,80 +166,128 @@
 
 | Card | Due | Label |
 |---|---|---|
-| AWS CDK – Infrastructure as Code | 5 May | Backend |
-| DynamoDB Table + GSI Implementation | 7 May | Backend |
-| Cognito User Pool – Authentication | 9 May | Backend |
-| API Gateway + Lambda Scaffolding | 13 May | Backend |
-| AI Quote Generation Pipeline (Claude API) | 17 May | AI Integration |
-| Photo Upload – S3 + Presigned URLs | 20 May | Backend |
-| Textract OCR – Receipts & Handwritten Notes | 23 May | AI Integration |
-| SES/SNS – Email & SMS Notifications | 27 May | Backend |
-| EventBridge – Scheduled Jobs | 30 May | Backend |
+| ✅ AWS CDK – Infrastructure as Code | 5 May | Backend |
+| ✅ DynamoDB Table + GSI Implementation | 7 May | Backend |
+| ✅ Cognito User Pool – Authentication | 9 May | Backend |
+| ✅ API Gateway + Lambda Scaffolding | 13 May | Backend |
+| ✅ AI Quote Generation Pipeline (Claude API) | 17 May | AI Integration |
+| ✅ Photo Upload – S3 + Presigned URLs | 20 May | Backend |
+| ✅ Textract OCR – Receipts & Handwritten Notes | 23 May | AI Integration |
+| ✅ SES/SNS – Email & SMS Notifications | 27 May | Backend |
+| ✅ EventBridge – Scheduled Jobs | 30 May | Backend |
 
 **Card details:**
 
-**AWS CDK – Infrastructure as Code** – 5 May
+**AWS CDK – Infrastructure as Code** – 5 May ✅ Completed
 - CDK project setup (TypeScript)
 - DynamoDB table + GSI stacks
 - S3 buckets (photos, PDFs, XML)
 - API Gateway + Lambda stack
 - Cognito User Pool stack
-- CloudFront distribution
+- CloudFront distribution *(deferred to June — needed only for frontend hosting)*
 - EventBridge rules
 - SES/SNS configuration
 
-**DynamoDB Table + GSI Implementation** – 7 May
+> ✅ Completed – 11 May 2026
+> 📂 GitHub: `/infra/` (5 CDK stacks: DataStack, AuthStack, ApiStack, NotificationStack, SchedulingStack)
+> 🔀 All stacks deployed to staging (`eu-south-1`, account 491545415092)
+> ⚠️ CloudFront distribution deferred to June frontend phase
+
+**DynamoDB Table + GSI Implementation** – 7 May ✅ Completed
 - Create table with PK/SK
 - Add GSI-1 (by user/status)
 - Add GSI-2 (by date)
 - Seed test data
 - Validate all access patterns
 
-**Cognito User Pool – Authentication** – 9 May
+> ✅ Completed – 11 May 2026
+> 📂 Table `CantiereSnapTable-staging` live in eu-south-1
+> 📊 Access patterns validated via end-to-end lifecycle test: client creation, job CRUD, quote generation, photo upload, OCR materials, invoice creation with status transitions
+> 📊 Test data seeded during integration testing (client, job with 14 quote items, 4 OCR materials, invoice with FatturaPA XML)
+
+**Cognito User Pool – Authentication** – 9 May ✅ Completed
 - Create User Pool and App Client
 - Configure email verification
 - Integrate JWT authoriser on API Gateway
 - Test sign-up / sign-in / refresh flows
 
-**API Gateway + Lambda Scaffolding** – 13 May
+> ✅ Completed – 11 May 2026
+> 📂 User Pool `eu-south-1_fztVWe2zw`, Client ID `49k1v94dcoe1jvikn41q00ro4m`
+> 📊 Full auth flow tested end-to-end: register → email verification → login (ID token) → refresh token
+> 🐛 Fixed: login handler returned AccessToken instead of IdToken (API Gateway Cognito authorizer requires ID tokens)
+
+**API Gateway + Lambda Scaffolding** – 13 May ✅ Completed
 - API Gateway REST API setup
 - Lambda handler structure (one per resource)
 - Input validation middleware
 - Centralised error handling
 - Logging (CloudWatch)
-- Local testing with SAM CLI
+- Local testing with SAM CLI *(replaced by Jest — 307+ unit tests)*
 
-**AI Quote Generation Pipeline (Claude API)** – 17 May
+> ✅ Completed – 11 May 2026
+> 📂 API endpoint: `https://ec0ws3spi8.execute-api.eu-south-1.amazonaws.com/staging/`
+> 📂 GitHub: `/backend/handlers/` (11 Lambda handlers), `/backend/shared/` (7 shared modules)
+> 📊 307+ Jest unit tests (all passing), structured JSON logging to CloudWatch, centralised error handling via `shared/response.ts`
+> ⚠️ SAM CLI local testing replaced by comprehensive Jest test suite with mocked AWS services
+
+**AI Quote Generation Pipeline (Claude API)** – 17 May ✅ Completed
 - Prompt engineering: system prompt for quote structure
 - Lambda integration with Anthropic Claude API
 - JSON schema enforcement for quote items
-- PDF generation (puppeteer / pdfkit)
+- PDF generation (pdfkit)
 - Store PDF to S3
-- Accuracy benchmarking vs manual quotes
+- Accuracy benchmarking vs manual quotes *(first datapoint collected; full benchmark in July)*
 
-**Photo Upload – S3 + Presigned URLs** – 20 May
+> ✅ Completed – 11 May 2026
+> 📂 GitHub: `/backend/handlers/quotes.handler.ts`, `/backend/shared/anthropic.ts`
+> 📊 End-to-end test: "Rifacimento bagno completo" → 14 line items, €8,624 total (realistic for Italian construction pricing)
+> 📊 Quote PDF generated via pdfkit, stored in S3
+> 🐛 Fixed: Lambda timeout 3s → 60s (AI calls take 20-26s), Claude JSON parsing (code fence handling), model updated to claude-sonnet-4-6
+> ⚠️ Full accuracy benchmark (5-10 quotes vs manual) deferred to July user validation
+
+**Photo Upload – S3 + Presigned URLs** – 20 May ✅ Completed
 - S3 bucket with lifecycle policies
 - Presigned URL generation Lambda
 - Photo metadata stored in DynamoDB
 - AI-generated technical descriptions (Claude API)
 - S3 prefix structure: /jobs/{jobId}/photos/
 
-**Textract OCR – Receipts & Handwritten Notes** – 23 May
+> ✅ Completed – 11 May 2026
+> 📂 GitHub: `/backend/handlers/photos.handler.ts`
+> 📊 Two-step upload flow tested: presigned PUT URL → direct S3 upload → metadata save + Claude Vision description
+> 🐛 Fixed: S3 CRC32 checksum header in presigned URLs (`requestChecksumCalculation: 'WHEN_REQUIRED'`), missing CDK route registrations for POST/GET/DELETE
+
+**Textract OCR – Receipts & Handwritten Notes** – 23 May ✅ Completed
 - Textract integration Lambda
 - Parse extracted text into structured material cost entries
 - Store to DynamoDB under job record
 - Error handling for low-quality scans
 
-**SES/SNS – Email & SMS Notifications** – 27 May
+> ✅ Completed – 11 May 2026
+> 📂 GitHub: `/backend/handlers/ocr.handler.ts`, `/backend/shared/textract.ts`
+> 📊 End-to-end test: receipt image → Textract extraction → Claude parsing → 4 structured material entries with confidence scoring (95%)
+> 📊 Low-confidence items (< 80%) flagged with warning field; manual entries get confidence: 100, verified: true
+
+**SES/SNS – Email & SMS Notifications** – 27 May ✅ Completed
 - SES: send quote PDF via email
 - SES: send invoice email
 - SNS: SMS appointment reminders
 - Email templates (HTML)
 
-**EventBridge – Scheduled Jobs** – 30 May
+> ✅ Completed – 11 May 2026
+> 📂 GitHub: `/backend/handlers/notification-sender.handler.ts`, `/backend/shared/ses.ts`, `/backend/shared/sns.ts`, `/backend/shared/email-templates.ts`
+> 📊 Professional HTML email templates for: quote PDF, invoice, overdue reminder, invoice due reminder
+> 📊 Structured JSON logging for all notification sends
+
+**EventBridge – Scheduled Jobs** – 30 May ✅ Completed
 - Overdue payment alert rule
 - Invoice reminder rule (7 days before due)
 - Monthly analytics aggregation
+
+> ✅ Completed – 11 May 2026
+> 📂 GitHub: `/backend/handlers/notification-sender.handler.ts` (overdue-alert + invoice-reminder), `/backend/handlers/monthly-analytics.handler.ts`
+> 📂 Three EventBridge rules deployed: daily overdue alert, daily 7-day invoice reminder, monthly analytics (1st of month at 01:00)
+> 📊 Batch processing with per-item error handling (single failure doesn't stop the batch)
 
 ---
 
@@ -331,6 +379,8 @@
 - Tests for job CRUD handlers
 - Tests for OCR handler
 - Coverage report (target >80%)
+
+> ⚠️ Note: 307+ unit tests already written during May backend phase. This card may be partially complete — run coverage report and add any missing edge cases.
 
 **Integration Tests – REST API** – 8 Jul
 - Postman collection for all endpoints
@@ -429,3 +479,38 @@
 - **RQ1:** How can a serverless AWS architecture deliver a full-lifecycle job management app for micro-enterprises at near-zero operational cost?
 - **RQ2:** To what extent can LLM APIs automate structured document generation (quotes, invoices) from unstructured natural-language input?
 - **RQ3:** What are the architectural trade-offs (latency, cost, reliability) of a fully serverless stack vs container-based alternatives?
+
+---
+
+## Integration Testing Results — May 11, 2026
+
+Full end-to-end lifecycle validated on staging environment:
+
+| Step | Endpoint | Result |
+|---|---|---|
+| Register | POST /auth/register | ✅ Cognito user created + DynamoDB profile |
+| Verify email | POST /auth/verify | ✅ Code confirmed |
+| Login | POST /auth/login | ✅ ID token + refresh token returned |
+| Refresh token | POST /auth/refresh | ✅ New access token issued |
+| Create client | POST /clients | ✅ Client saved to DynamoDB |
+| Create job | POST /jobs | ✅ Job created with auto-incremented ID |
+| Generate AI quote | POST /jobs/00001/quote | ✅ 14 items, €8,624 total (Claude Sonnet) |
+| Approve quote | POST /jobs/00001/quote/finalize | ✅ Status → Accepted |
+| Generate PDF | POST /jobs/00001/quote/send | ✅ PDF in S3 (after pdfkit font fix) |
+| Upload photo | POST /photos/upload-url → PUT S3 → POST /photos | ✅ Presigned URL flow works |
+| OCR scan | POST /jobs/00001/materials/scan | ✅ 4 materials parsed, confidence 95% |
+| Advance status | PATCH /jobs/00001/status (InProgress → Completed) | ✅ State machine validated |
+| Create invoice | POST /jobs/00001/invoice | ✅ FatturaPA XML in S3, €10,521.28 inc. VAT |
+
+### Bugs Found and Fixed During Integration
+| Bug | Root Cause | Fix |
+|---|---|---|
+| Login token rejected by API Gateway | Handler returned AccessToken, authorizer requires IdToken | Switched to `auth.IdToken` |
+| Quote endpoint not found | CDK route `/quote/generate` vs handler route `/quote` | Added `/generate` route case |
+| AI service unavailable (404) | Model `claude-sonnet-4-20250514` deprecated | Updated to `claude-sonnet-4-6` |
+| AI service timeout | Lambda default 3s, AI calls take 20-26s | Set timeout to 60s on quotesFn and ocrFn |
+| AI JSON parse error | Claude wraps JSON in code fences | Fixed parser to use indexOf/lastIndexOf |
+| Photo POST route missing | CDK didn't register POST /photos | Added missing route |
+| S3 presigned URL rejected | CRC32 checksum header in signed URL | Set `requestChecksumCalculation: 'WHEN_REQUIRED'` |
+| PDF font missing | esbuild doesn't copy pdfkit .afm files | Added afterBundling hook to copy font data |
+| Env var mismatch | CDK `USER_POOL_CLIENT_ID` vs handler `CLIENT_ID` | Renamed to `CLIENT_ID` |
