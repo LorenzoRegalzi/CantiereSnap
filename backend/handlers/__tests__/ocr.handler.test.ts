@@ -12,6 +12,7 @@ jest.mock('../../shared/textract', () => ({
 }));
 
 jest.mock('../../shared/s3', () => ({
+  s3Client: { send: jest.fn() },
   getPresignedUrl: jest.fn(),
 }));
 
@@ -32,19 +33,22 @@ const ctx = { awsRequestId: 'test-request-id' } as never;
 
 import { docClient } from '../../shared/dynamodb';
 import { textractClient } from '../../shared/textract';
-import { getPresignedUrl } from '../../shared/s3';
+import { s3Client, getPresignedUrl } from '../../shared/s3';
 import { anthropicClient } from '../../shared/anthropic';
 
 const mockSend = docClient.send as jest.Mock;
 const mockTextract = textractClient.send as jest.Mock;
+const mockS3 = s3Client.send as jest.Mock;
 const mockPresignedUrl = getPresignedUrl as jest.Mock;
 const mockCreate = anthropicClient.messages.create as jest.Mock;
 
-// Reset all mock implementations between tests to prevent state leakage.
-// clearMocks (in jest.config) only clears call history; resetAllMocks also
-// removes implementations so each test starts from a clean slate.
+async function* fakeImageStream(): AsyncIterable<Uint8Array> {
+  yield new Uint8Array([0xff, 0xd8]); // minimal JPEG bytes
+}
+
 beforeEach(() => {
   mockPresignedUrl.mockResolvedValue('https://s3.example.com/signed-url');
+  mockS3.mockResolvedValue({ Body: fakeImageStream(), ContentType: 'image/jpeg' });
 });
 
 afterEach(() => {
@@ -170,9 +174,9 @@ describe('POST /jobs/{jobId}/materials/scan', () => {
     expect(body.items[0].verified).toBe(false);
   });
 
-  it('returns 200 with empty items when Textract returns no text', async () => {
+  it('returns 200 with empty items when Claude returns no items', async () => {
     mockSend.mockResolvedValueOnce({ Item: { PK: `USER#${USER_ID}` } });
-    mockTextract.mockResolvedValueOnce({ Blocks: [] });
+    mockCreate.mockResolvedValueOnce({ content: [{ type: 'text', text: '[]' }] });
 
     const res = await handler(scanEvent(), ctx);
     expect(res.statusCode).toBe(200);

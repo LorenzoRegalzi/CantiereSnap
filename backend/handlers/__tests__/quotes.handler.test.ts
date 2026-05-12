@@ -155,7 +155,7 @@ describe('POST /jobs/{jobId}/quote — generateQuote', () => {
     const body = JSON.parse(res.body);
     expect(body.quote.totalAmount).toBe(770);
     expect(body.quote.status).toBe('Draft');
-    expect(body.quote.model).toBe('claude-sonnet-4-20250514');
+    expect(body.quote.model).toBe('claude-sonnet-4-6');
     expect(body.quote.itemCount).toBe(2);
     expect(body.items).toHaveLength(2);
     expect(body.items[0].seq).toBe(1);
@@ -178,7 +178,7 @@ describe('POST /jobs/{jobId}/quote — generateQuote', () => {
     expect(quotePut.PK).toBe(`JOB#${USER_ID}#${JOB_ID_PADDED}`);
     expect(quotePut.SK).toBe('QUOTE');
     expect(quotePut.entityType).toBe('Quote');
-    expect(quotePut.model).toBe('claude-sonnet-4-20250514');
+    expect(quotePut.model).toBe('claude-sonnet-4-6');
     expect(quotePut.inputLength).toBe(VALID_DESCRIPTION.length);
     expect(quotePut.currency).toBe('EUR');
   });
@@ -216,7 +216,7 @@ describe('POST /jobs/{jobId}/quote — generateQuote', () => {
     await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
 
     const aiCall = mockAnthropic.mock.calls[0][0];
-    expect(aiCall.model).toBe('claude-sonnet-4-20250514');
+    expect(aiCall.model).toBe('claude-sonnet-4-6');
     expect(aiCall.max_tokens).toBe(1500);
     expect(aiCall.system).toContain('Italian');
     expect(aiCall.messages[0].role).toBe('user');

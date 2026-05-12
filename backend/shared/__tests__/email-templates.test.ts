@@ -132,7 +132,7 @@ describe('overdueEmail', () => {
 
   it('html contains alert styling (alert-box class)', () => {
     const { html } = overdueEmail(OVERDUE_PARAMS);
-    expect(html).toContain('alert-box');
+    expect(html).toContain('class="alert-box"');
   });
 
   it('html contains invoice number, amount, and due date', () => {
@@ -164,10 +164,10 @@ describe('invoiceDueReminder', () => {
     expect(typeof text).toBe('string');
   });
 
-  it('html contains info-box styling (not alert-box)', () => {
+  it('html contains info-box styling (not alert-box element)', () => {
     const { html } = invoiceDueReminder(REMINDER_PARAMS);
-    expect(html).toContain('info-box');
-    expect(html).not.toContain('alert-box');
+    expect(html).toContain('class="info-box"');
+    expect(html).not.toContain('class="alert-box"');
   });
 
   it('html contains invoice number, amount, and due date', () => {

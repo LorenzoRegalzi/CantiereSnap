@@ -1,8 +1,14 @@
 import type { APIGatewayProxyResult } from 'aws-lambda';
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+  'Access-Control-Allow-Methods': 'GET,POST,PATCH,PUT,DELETE,OPTIONS',
+};
+
 const json = (statusCode: number, body: unknown): APIGatewayProxyResult => ({
   statusCode,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
   body: JSON.stringify(body),
 });
 
@@ -31,7 +37,7 @@ export const forbidden = (message = 'You do not have permission to access this r
 
 export const noContent = (): APIGatewayProxyResult => ({
   statusCode: 204,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
   body: '',
 });
 
