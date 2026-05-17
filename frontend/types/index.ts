@@ -1,23 +1,41 @@
+export type JobStatus = 'Quote' | 'Accepted' | 'InProgress' | 'Completed' | 'Invoiced';
+
 export interface Job {
   jobId: string;
+  jobIdFormatted: string;
   clientId: string;
-  title: string;
+  clientName: string;
   description: string;
-  status: 'Quote' | 'Accepted' | 'InProgress' | 'Completed' | 'Invoiced';
-  address?: string;
-  targetDate?: string;
+  address: string;
+  targetDate: string;
+  status: JobStatus;
   createdAt: string;
   updatedAt: string;
 }
 
+export interface Address {
+  street: string;
+  city: string;
+  province: string;
+  cap: string;
+  country: string;
+}
+
 export interface Client {
   clientId: string;
-  fullName: string;
-  email?: string;
-  phone?: string;
-  fiscalCode?: string;
-  address?: string;
+  clientName: string;
+  email: string;
+  phone: string | null;
+  codiceFiscale: string;
+  partitaIva: string | null;
+  address: Address;
   createdAt: string;
+}
+
+export interface StatusTransition {
+  fromStatus: string;
+  toStatus: string;
+  changedAt: string;
 }
 
 export interface QuoteItem {
@@ -74,6 +92,14 @@ export interface Material {
   confidence: number;
   source: 'ocr' | 'manual';
   warning?: string;
+}
+
+export interface JobDetails extends Job {
+  statusHistory: StatusTransition[];
+  quote: Quote | null;
+  photos: Photo[];
+  materials: Material[];
+  invoice: Invoice | null;
 }
 
 export interface PaginatedResponse<T> {

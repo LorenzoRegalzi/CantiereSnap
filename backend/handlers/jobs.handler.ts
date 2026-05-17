@@ -257,16 +257,18 @@ async function listJobs(
     const exprValues: Record<string, unknown> = { ':pk': `USER_JOBS#${userId}` };
     let keyCondition: string;
 
+    // GSI2SK stores full ISO timestamps (e.g. "2026-05-17T14:23:00.000Z").
+    // Pad bare YYYY-MM-DD dates to ISO boundaries so BETWEEN / >= / <= comparisons work.
     if (startDate && endDate) {
       keyCondition = 'GSI2PK = :pk AND GSI2SK BETWEEN :start AND :end';
-      exprValues[':start'] = startDate;
-      exprValues[':end'] = endDate;
+      exprValues[':start'] = startDate + 'T00:00:00.000Z';
+      exprValues[':end'] = endDate + 'T23:59:59.999Z';
     } else if (startDate) {
       keyCondition = 'GSI2PK = :pk AND GSI2SK >= :start';
-      exprValues[':start'] = startDate;
+      exprValues[':start'] = startDate + 'T00:00:00.000Z';
     } else {
       keyCondition = 'GSI2PK = :pk AND GSI2SK <= :end';
-      exprValues[':end'] = endDate;
+      exprValues[':end'] = endDate + 'T23:59:59.999Z';
     }
 
     if (search) exprValues[':search'] = search;
@@ -287,33 +289,45 @@ async function listJobs(
     items = (result.Items ?? []) as PartitionItem[];
     lastKey = result.LastEvaluatedKey as Record<string, unknown> | undefined;
   } else {
-    // Default: main table, newest first, excluding soft-deleted jobs
-    const exprValues: Record<string, unknown> = {
-      ':pk': `USER#${userId}`,
-      ':prefix': 'JOB#',
-      ':cancelled': 'Cancelled',
-    };
+    // Default: GSI-1, all statuses, newest first, excluding soft-deleted jobs.
+    // The main-table query (PK = USER#userId, SK begins_with JOB#) is unreliable
+    // because DynamoDB's Limit counts *scanned* items before FilterExpression is
+    // applied, and CLIENT#* / COUNTER#* items share the same PK and consume the
+    // Limit before any JOB# items are reached.  GSI-1 is keyed on GSI1PK =
+    // USER#userId so it only contains Job items — no cross-entity contamination.
+    const allStatuses = [...VALID_STATUSES];
+    const filterValues: Record<string, unknown> = { ':cancelled': 'Cancelled' };
     let filterExpr = '#jobStatus <> :cancelled';
 
     if (search) {
-      exprValues[':search'] = search;
+      filterValues[':search'] = search;
       filterExpr += ' AND (contains(description, :search) OR contains(clientName, :search))';
     }
 
-    const result = await docClient.send(
-      new QueryCommand({
-        TableName: TABLE,
-        KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)',
-        ExpressionAttributeValues: exprValues,
-        ExpressionAttributeNames: { '#jobStatus': 'status' },
-        FilterExpression: filterExpr,
-        Limit: limit,
-        ExclusiveStartKey: exclusiveStartKey,
-        ScanIndexForward: false,
-      }),
+    const results = await Promise.all(
+      allStatuses.map((status) =>
+        docClient.send(
+          new QueryCommand({
+            TableName: TABLE,
+            IndexName: 'StatusIndex',
+            KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
+            ExpressionAttributeValues: {
+              ':pk': `USER#${userId}`,
+              ':prefix': `JOB#${status}#`,
+              ...filterValues,
+            },
+            ExpressionAttributeNames: { '#jobStatus': 'status' },
+            FilterExpression: filterExpr,
+            Limit: limit,
+            ExclusiveStartKey: exclusiveStartKey,
+            ScanIndexForward: false,
+          }),
+        ),
+      ),
     );
-    items = (result.Items ?? []) as PartitionItem[];
-    lastKey = result.LastEvaluatedKey as Record<string, unknown> | undefined;
+
+    items = results.flatMap((r) => (r.Items ?? []) as PartitionItem[]).slice(0, limit);
+    lastKey = results[results.length - 1]?.LastEvaluatedKey as Record<string, unknown> | undefined;
   }
 
   return ok({

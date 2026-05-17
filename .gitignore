@@ -1,6 +1,7 @@
 # Claude Code
 CLAUDE.md
 .claude/
+.claudeignore
 
 # CDK
 infra/cdk.out/
