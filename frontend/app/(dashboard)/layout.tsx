@@ -10,6 +10,7 @@ import {
   Receipt,
   Camera,
   BarChart3,
+  User,
   LogOut,
   Menu,
   X,
@@ -23,6 +24,7 @@ const navItems = [
   { label: 'Fatture', href: '/invoices', icon: Receipt },
   { label: 'Galleria', href: '/photos', icon: Camera },
   { label: 'Dashboard', href: '/analytics', icon: BarChart3 },
+  { label: 'Profilo', href: '/profile', icon: User },
 ];
 
 function Sidebar({ onClose }: { onClose?: () => void }) {

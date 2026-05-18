@@ -3,6 +3,8 @@ CLAUDE.md
 .claude/
 .claudeignore
 
+frontend/aws
+
 # CDK
 infra/cdk.out/
 infra/dist/

@@ -76,40 +76,60 @@ export interface QuoteFinalizeResponse {
 }
 
 export interface Invoice {
-  jobId: string;
   invoiceNumber: string;
-  clientData: object;
-  lineItems: object[];
-  subtotal: number;
-  vatRate: number;
+  jobId: string;
+  clientName: string;
+  totalAmount: number;
   vatAmount: number;
-  total: number;
-  status: 'Sent' | 'Paid' | 'Overdue';
+  vatRate: number;
+  currency?: string;
+  status: 'Draft' | 'Sent' | 'Paid' | 'Overdue';
+  dueDate: string;
+  paymentTerms: string;
   xmlUrl?: string;
+  paidAt?: string;
   createdAt: string;
+  items: QuoteItem[];
+}
+
+export interface Profile {
+  fullName: string;
+  email: string;
+  businessName?: string;
+  partitaIva?: string;
+  codiceFiscale?: string;
+  regimeFiscale?: string;
+  phone?: string;
+  address?: Address;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Photo {
   photoId: string;
-  jobId: string;
-  tag: 'before' | 'after' | 'progress';
-  s3Key: string;
-  downloadUrl?: string;
-  aiDescription?: string;
-  createdAt: string;
+  tag: 'Before' | 'After';
+  mimeType: string;
+  sizeBytes: number | null;
+  imageUrl: string;
+  aiDescription: string | null;
+  aiDescriptionEdited: boolean;
+  uploadedAt: string;
 }
 
 export interface Material {
   materialId: string;
-  jobId: string;
-  name: string;
+  itemName: string;
   quantity: number;
-  unit: string;
-  unitPrice: number;
-  total: number;
+  cost: number;
   confidence: number;
-  source: 'ocr' | 'manual';
+  verified: boolean;
   warning?: string;
+  createdAt: string;
+}
+
+export interface MaterialsResponse {
+  items: Material[];
+  totalCost: number;
 }
 
 export interface JobDetails extends Job {
@@ -117,6 +137,7 @@ export interface JobDetails extends Job {
   quote: Quote | null;
   photos: Photo[];
   materials: Material[];
+  materialsTotalCost?: number;
   invoice: Invoice | null;
 }
 
@@ -138,4 +159,26 @@ export interface DashboardAnalytics {
   materialsCostBreakdown: Record<string, number>;
   totalJobs: number;
   totalInvoices: number;
+}
+
+export interface DashboardSummary {
+  month: string;
+  monthlyRevenue: number;
+  completionRate: number;
+  overdueInvoices: number;
+  avgQuoteToInvoiceDays: number | null;
+  totalJobs: number;
+  completedJobs: number;
+}
+
+export interface RevenueData {
+  startDate: string;
+  endDate: string;
+  months: { month: string; revenue: number }[];
+  total: number;
+}
+
+export interface JobsStats {
+  total: number;
+  byStatus: Record<string, number>;
 }

@@ -212,7 +212,9 @@ export class ApiStack extends cdk.Stack {
 
     // ── /dashboard ───────────────────────────────────────────────────────────
     const dashboardRes = api.root.addResource('dashboard');
-    dashboardRes.addResource('analytics').addMethod('GET', int(dashboardFn), auth);
+    dashboardRes.addResource('summary').addMethod('GET', int(dashboardFn), auth);
+    dashboardRes.addResource('revenue').addMethod('GET', int(dashboardFn), auth);
+    dashboardRes.addResource('jobs-stats').addMethod('GET', int(dashboardFn), auth);
     dashboardRes.addResource('overdue').addMethod('GET', int(dashboardFn), auth);
 
     // ── /notifications ────────────────────────────────────────────────────────

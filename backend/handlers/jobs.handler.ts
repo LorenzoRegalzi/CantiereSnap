@@ -224,11 +224,12 @@ async function listJobs(
         'status',
       );
 
-    const filterValues: Record<string, unknown> = {};
-    let filterExpr: string | undefined;
+    // Always exclude soft-deleted jobs; optionally apply search filter.
+    const filterValues: Record<string, unknown> = { ':cancelled': 'Cancelled' };
+    let filterExpr = '#jobStatus <> :cancelled';
     if (search) {
       filterValues[':search'] = search;
-      filterExpr = 'contains(description, :search) OR contains(clientName, :search)';
+      filterExpr += ' AND (contains(description, :search) OR contains(clientName, :search))';
     }
 
     const results = await Promise.all(
@@ -243,7 +244,8 @@ async function listJobs(
               ':prefix': `JOB#${status}#`,
               ...filterValues,
             },
-            ...(filterExpr ? { FilterExpression: filterExpr } : {}),
+            FilterExpression: filterExpr,
+            ExpressionAttributeNames: { '#jobStatus': 'status' },
             Limit: limit,
             ExclusiveStartKey: exclusiveStartKey,
           }),
@@ -254,40 +256,54 @@ async function listJobs(
     items = results.flatMap((r) => (r.Items ?? []) as PartitionItem[]).slice(0, limit);
     lastKey = results[results.length - 1]?.LastEvaluatedKey as Record<string, unknown> | undefined;
   } else if (startDate || endDate) {
-    const exprValues: Record<string, unknown> = { ':pk': `USER_JOBS#${userId}` };
-    let keyCondition: string;
+    // DueDateIndex only projects a small attribute set (designed for invoice notifications)
+    // and GSI2SK stores createdAt, not targetDate.  Use StatusIndex instead — it projects
+    // ALL attributes — and apply a FilterExpression on targetDate (YYYY-MM-DD string).
+    const filterValues: Record<string, unknown> = { ':cancelled': 'Cancelled' };
+    let filterExpr = '#jobStatus <> :cancelled';
 
-    // GSI2SK stores full ISO timestamps (e.g. "2026-05-17T14:23:00.000Z").
-    // Pad bare YYYY-MM-DD dates to ISO boundaries so BETWEEN / >= / <= comparisons work.
     if (startDate && endDate) {
-      keyCondition = 'GSI2PK = :pk AND GSI2SK BETWEEN :start AND :end';
-      exprValues[':start'] = startDate + 'T00:00:00.000Z';
-      exprValues[':end'] = endDate + 'T23:59:59.999Z';
+      filterExpr += ' AND targetDate BETWEEN :start AND :end';
+      filterValues[':start'] = startDate;
+      filterValues[':end'] = endDate;
     } else if (startDate) {
-      keyCondition = 'GSI2PK = :pk AND GSI2SK >= :start';
-      exprValues[':start'] = startDate + 'T00:00:00.000Z';
+      filterExpr += ' AND targetDate >= :start';
+      filterValues[':start'] = startDate;
     } else {
-      keyCondition = 'GSI2PK = :pk AND GSI2SK <= :end';
-      exprValues[':end'] = endDate + 'T23:59:59.999Z';
+      filterExpr += ' AND targetDate <= :end';
+      filterValues[':end'] = endDate;
     }
 
-    if (search) exprValues[':search'] = search;
+    if (search) {
+      filterValues[':search'] = search;
+      filterExpr += ' AND (contains(description, :search) OR contains(clientName, :search))';
+    }
 
-    const result = await docClient.send(
-      new QueryCommand({
-        TableName: TABLE,
-        IndexName: 'DueDateIndex',
-        KeyConditionExpression: keyCondition,
-        ExpressionAttributeValues: exprValues,
-        ...(search
-          ? { FilterExpression: 'contains(description, :search) OR contains(clientName, :search)' }
-          : {}),
-        Limit: limit,
-        ExclusiveStartKey: exclusiveStartKey,
-      }),
+    const allStatuses = [...VALID_STATUSES];
+    const results = await Promise.all(
+      allStatuses.map((status) =>
+        docClient.send(
+          new QueryCommand({
+            TableName: TABLE,
+            IndexName: 'StatusIndex',
+            KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
+            ExpressionAttributeValues: {
+              ':pk': `USER#${userId}`,
+              ':prefix': `JOB#${status}#`,
+              ...filterValues,
+            },
+            FilterExpression: filterExpr,
+            ExpressionAttributeNames: { '#jobStatus': 'status' },
+            Limit: limit,
+            ExclusiveStartKey: exclusiveStartKey,
+            ScanIndexForward: false,
+          }),
+        ),
+      ),
     );
-    items = (result.Items ?? []) as PartitionItem[];
-    lastKey = result.LastEvaluatedKey as Record<string, unknown> | undefined;
+
+    items = results.flatMap((r) => (r.Items ?? []) as PartitionItem[]).slice(0, limit);
+    lastKey = results[results.length - 1]?.LastEvaluatedKey as Record<string, unknown> | undefined;
   } else {
     // Default: GSI-1, all statuses, newest first, excluding soft-deleted jobs.
     // The main-table query (PK = USER#userId, SK begins_with JOB#) is unreliable
@@ -628,18 +644,35 @@ async function updateJobStatus(
 async function deleteJob(userId: string, jobId: string): Promise<APIGatewayProxyResult> {
   const numId = parseInt(jobId, 10);
   if (isNaN(numId)) return notFound('Job not found.');
+  const padded = padJobId(numId);
+
+  // Fetch createdAt so we can build the updated GSI1SK.
+  const current = await docClient.send(
+    new GetCommand({
+      TableName: TABLE,
+      Key: { PK: `USER#${userId}`, SK: `JOB#${padded}` },
+      ProjectionExpression: 'createdAt, #jobStatus',
+      ExpressionAttributeNames: { '#jobStatus': 'status' },
+    }),
+  );
+  if (!current.Item || current.Item.status === 'Cancelled') return notFound('Job not found.');
+
+  const now = new Date().toISOString();
+  const createdAt = current.Item.createdAt as string;
 
   try {
     await docClient.send(
       new UpdateCommand({
         TableName: TABLE,
-        Key: { PK: `USER#${userId}`, SK: `JOB#${padJobId(numId)}` },
-        UpdateExpression: 'SET #jobStatus = :cancelled, updatedAt = :now',
+        Key: { PK: `USER#${userId}`, SK: `JOB#${padded}` },
+        // Update GSI1SK so the job is removed from all valid-status index ranges.
+        UpdateExpression: 'SET #jobStatus = :cancelled, GSI1SK = :gsi1sk, updatedAt = :now',
         ConditionExpression: 'attribute_exists(PK) AND #jobStatus <> :cancelled',
         ExpressionAttributeNames: { '#jobStatus': 'status' },
         ExpressionAttributeValues: {
           ':cancelled': 'Cancelled',
-          ':now': new Date().toISOString(),
+          ':gsi1sk': `JOB#Cancelled#${createdAt}`,
+          ':now': now,
         },
       }),
     );

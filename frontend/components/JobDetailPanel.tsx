@@ -3,12 +3,19 @@
 import { useEffect, useState } from 'react';
 import { X, MapPin, Calendar, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import apiClient from '@/lib/api-client';
-import { Job, JobDetails, JobStatus, Quote, QuoteItem } from '@/types';
+import { Invoice, Job, JobDetails, JobStatus, Material, Photo, Quote, QuoteItem } from '@/types';
 import { STATUS_COLORS, STATUS_LABELS, NEXT_STATUS, ADVANCE_LABELS } from './JobCard';
 import Alert from './ui/Alert';
 import Button from './ui/Button';
 import QuoteGenerator from './QuoteGenerator';
 import QuoteEditor from './QuoteEditor';
+import PhotoGallery from './PhotoGallery';
+import PhotoLightbox from './PhotoLightbox';
+import PhotoUpload from './PhotoUpload';
+import MaterialsSection from './MaterialsSection';
+import ReceiptScanner from './ReceiptScanner';
+import InvoiceCreator from './InvoiceCreator';
+import InvoiceViewer from './InvoiceViewer';
 import { formatCurrency } from '@/lib/format';
 
 interface JobDetailPanelProps {
@@ -17,7 +24,6 @@ interface JobDetailPanelProps {
   onStatusUpdated: (jobId: string, newStatus: JobStatus) => void;
 }
 
-// Skeleton line
 function Skeleton({ className = '' }: { className?: string }) {
   return <div className={`animate-pulse rounded bg-stone-200 ${className}`} />;
 }
@@ -47,13 +53,58 @@ const QUOTE_STATUS_COLORS: Record<string, string> = {
   Sent: 'bg-blue-100 text-blue-800',
 };
 
+function SectionHeader({
+  label,
+  expanded,
+  onToggle,
+  badge,
+}: {
+  label: string;
+  expanded: boolean;
+  onToggle: () => void;
+  badge?: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      className="flex w-full items-center justify-between px-4 py-3 text-left"
+    >
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold uppercase tracking-wide text-brand-muted">{label}</span>
+        {badge}
+      </div>
+      {expanded ? (
+        <ChevronUp className="h-4 w-4 text-brand-muted" />
+      ) : (
+        <ChevronDown className="h-4 w-4 text-brand-muted" />
+      )}
+    </button>
+  );
+}
+
 export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDetailPanelProps) {
   const [details, setDetails] = useState<JobDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
   const [alert, setAlert] = useState<{ variant: 'success' | 'error'; message: string } | null>(null);
   const [quoteState, setQuoteState] = useState<{ quote: Quote; items: QuoteItem[] } | null>(null);
+
+  // Collapsible section state
   const [quoteExpanded, setQuoteExpanded] = useState(true);
+  const [photosExpanded, setPhotosExpanded] = useState(true);
+  const [materialsExpanded, setMaterialsExpanded] = useState(false);
+  const [invoiceExpanded, setInvoiceExpanded] = useState(false);
+
+  // Photos state
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
+  // Materials state
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [materialsTotalCost, setMaterialsTotalCost] = useState(0);
+
+  // Invoice state
+  const [invoice, setInvoice] = useState<Invoice | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -65,19 +116,20 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
       .then(({ data }) => {
         if (!cancelled) {
           setDetails(data);
-          // If the details include a quote, seed the quote state
           if (data.quote) {
             setQuoteState({ quote: data.quote, items: (data.quote as unknown as { items?: QuoteItem[] }).items ?? [] });
           }
+          setPhotos(data.photos ?? []);
+          setMaterials(data.materials ?? []);
+          setMaterialsTotalCost(data.materialsTotalCost ?? 0);
+          setInvoice(data.invoice ?? null);
         }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [job.jobId]);
 
   const currentStatus = details?.status ?? job.status;
@@ -87,11 +139,9 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
     if (!nextStatus) return;
     setAdvancing(true);
     setAlert(null);
-
     try {
       await apiClient.patch(`/jobs/${job.jobId}/status`, { status: nextStatus });
       onStatusUpdated(job.jobId, nextStatus);
-      // Refresh details
       const { data } = await apiClient.get<JobDetails>(`/jobs/${job.jobId}/details`);
       setDetails(data);
       setAlert({ variant: 'success', message: `Stato aggiornato: ${STATUS_LABELS[nextStatus]}` });
@@ -100,6 +150,20 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
     } finally {
       setAdvancing(false);
     }
+  }
+
+  function handlePhotoUploaded(photo: Photo) {
+    setPhotos((prev) => [photo, ...prev]);
+    setPhotosExpanded(true);
+  }
+
+  function handlePhotoUpdated(updated: Photo) {
+    setPhotos((prev) => prev.map((p) => (p.photoId === updated.photoId ? updated : p)));
+  }
+
+  function handleMaterialsChanged(items: Material[], totalCost: number) {
+    setMaterials(items);
+    setMaterialsTotalCost(totalCost);
   }
 
   const formattedDate = job.targetDate
@@ -113,12 +177,9 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/40"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-40 bg-black/40" onClick={onClose} />
 
-      {/* Panel — desktop: right slide-in; mobile: full screen */}
+      {/* Panel */}
       <div className="fixed inset-y-0 right-0 z-50 flex w-full flex-col bg-white shadow-2xl md:w-[480px]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-brand-border px-6 py-4">
@@ -147,20 +208,13 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
             <DetailSkeleton />
           ) : details ? (
             <div className="space-y-6 p-6">
-              {/* Alert */}
               {alert && (
-                <Alert
-                  variant={alert.variant}
-                  message={alert.message}
-                  onDismiss={() => setAlert(null)}
-                />
+                <Alert variant={alert.variant} message={alert.message} onDismiss={() => setAlert(null)} />
               )}
 
-              {/* Client info */}
+              {/* Client */}
               <section>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted">
-                  Cliente
-                </h3>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted">Cliente</h3>
                 <div className="rounded-lg border border-brand-border bg-stone-50 p-4">
                   <p className="font-semibold text-brand-text">{details.clientName}</p>
                 </div>
@@ -168,9 +222,7 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
 
               {/* Description */}
               <section>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted">
-                  Descrizione
-                </h3>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted">Descrizione</h3>
                 <p className="text-sm text-brand-text">{details.description}</p>
               </section>
 
@@ -188,14 +240,10 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
                 )}
               </section>
 
-              {/* Advance status action */}
+              {/* Advance status */}
               {nextStatus && (
                 <section>
-                  <Button
-                    onClick={handleAdvance}
-                    loading={advancing}
-                    className="w-full"
-                  >
+                  <Button onClick={handleAdvance} loading={advancing} className="w-full">
                     {ADVANCE_LABELS[currentStatus]}
                   </Button>
                 </section>
@@ -204,9 +252,7 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
               {/* Status timeline */}
               {details.statusHistory.length > 0 && (
                 <section>
-                  <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-brand-muted">
-                    Cronologia stati
-                  </h3>
+                  <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-brand-muted">Cronologia stati</h3>
                   <ol className="space-y-3">
                     {[...details.statusHistory].reverse().map((entry, i) => (
                       <li key={i} className="flex items-center gap-2 text-sm">
@@ -227,18 +273,14 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
                 </section>
               )}
 
-              {/* Preventivo section */}
+              {/* Preventivo */}
               <section className="rounded-lg border border-brand-border">
-                {/* Collapsible header */}
-                <button
-                  onClick={() => setQuoteExpanded((o) => !o)}
-                  className="flex w-full items-center justify-between px-4 py-3 text-left"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-brand-muted">
-                      Preventivo
-                    </span>
-                    {quoteState && (
+                <SectionHeader
+                  label="Preventivo"
+                  expanded={quoteExpanded}
+                  onToggle={() => setQuoteExpanded((o) => !o)}
+                  badge={
+                    quoteState ? (
                       <>
                         <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${QUOTE_STATUS_COLORS[quoteState.quote.status]}`}>
                           {QUOTE_STATUS_LABELS[quoteState.quote.status]}
@@ -247,15 +289,9 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
                           {formatCurrency(quoteState.quote.totalAmount)}
                         </span>
                       </>
-                    )}
-                  </div>
-                  {quoteExpanded ? (
-                    <ChevronUp className="h-4 w-4 text-brand-muted" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-brand-muted" />
-                  )}
-                </button>
-
+                    ) : null
+                  }
+                />
                 {quoteExpanded && (
                   <div className="border-t border-brand-border p-4">
                     {!quoteState ? (
@@ -277,20 +313,130 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
                 )}
               </section>
 
-              {/* Placeholder sections for future cards */}
-              <section className="space-y-3">
-                <div className="rounded-lg border border-dashed border-brand-border p-4">
-                  <p className="text-xs font-semibold uppercase text-brand-muted">Foto</p>
-                  <p className="mt-1 text-sm text-brand-muted">Nessuna foto caricata.</p>
-                </div>
-                <div className="rounded-lg border border-dashed border-brand-border p-4">
-                  <p className="text-xs font-semibold uppercase text-brand-muted">Materiali</p>
-                  <p className="mt-1 text-sm text-brand-muted">Nessun materiale registrato.</p>
-                </div>
-                <div className="rounded-lg border border-dashed border-brand-border p-4">
-                  <p className="text-xs font-semibold uppercase text-brand-muted">Fattura</p>
-                  <p className="mt-1 text-sm text-brand-muted">Nessuna fattura.</p>
-                </div>
+              {/* Foto */}
+              <section className="rounded-lg border border-brand-border">
+                <SectionHeader
+                  label="Foto"
+                  expanded={photosExpanded}
+                  onToggle={() => setPhotosExpanded((o) => !o)}
+                  badge={
+                    photos.length > 0 ? (
+                      <span className="rounded-full bg-stone-100 px-2 py-0.5 text-xs font-medium text-brand-muted">
+                        {photos.length}
+                      </span>
+                    ) : null
+                  }
+                />
+                {photosExpanded && (
+                  <div className="border-t border-brand-border p-4 space-y-3">
+                    <PhotoUpload jobId={job.jobId} onUploaded={handlePhotoUploaded} />
+                    <PhotoGallery
+                      photos={photos}
+                      onPhotoClick={(idx) => setLightboxIdx(idx)}
+                    />
+                  </div>
+                )}
+              </section>
+
+              {/* Materiali */}
+              <section className="rounded-lg border border-brand-border">
+                <SectionHeader
+                  label="Materiali"
+                  expanded={materialsExpanded}
+                  onToggle={() => setMaterialsExpanded((o) => !o)}
+                  badge={
+                    materials.length > 0 ? (
+                      <>
+                        <span className="rounded-full bg-stone-100 px-2 py-0.5 text-xs font-medium text-brand-muted">
+                          {materials.length}
+                        </span>
+                        <span className="text-xs font-semibold text-brand-text">
+                          {formatCurrency(materialsTotalCost)}
+                        </span>
+                      </>
+                    ) : null
+                  }
+                />
+                {materialsExpanded && (
+                  <div className="border-t border-brand-border p-4 space-y-3">
+                    <ReceiptScanner
+                      jobId={job.jobId}
+                      onScanned={(items, totalCost) => {
+                        handleMaterialsChanged(items, totalCost);
+                        setMaterialsExpanded(true);
+                      }}
+                    />
+                    <MaterialsSection
+                      jobId={job.jobId}
+                      initialItems={materials}
+                      initialTotalCost={materialsTotalCost}
+                      onMaterialsChanged={handleMaterialsChanged}
+                    />
+                  </div>
+                )}
+              </section>
+
+              {/* Fattura */}
+              <section className="rounded-lg border border-brand-border">
+                <SectionHeader
+                  label="Fattura"
+                  expanded={invoiceExpanded}
+                  onToggle={() => setInvoiceExpanded((o) => !o)}
+                  badge={
+                    invoice ? (
+                      <>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                          invoice.status === 'Draft' ? 'bg-stone-100 text-stone-600'
+                          : invoice.status === 'Sent' ? 'bg-blue-100 text-blue-700'
+                          : invoice.status === 'Paid' ? 'bg-teal-100 text-teal-700'
+                          : 'bg-red-100 text-red-700'
+                        }`}>
+                          {invoice.status === 'Draft' ? 'Bozza'
+                            : invoice.status === 'Sent' ? 'Inviata'
+                            : invoice.status === 'Paid' ? 'Pagata'
+                            : 'Scaduta'}
+                        </span>
+                        <span className="text-xs font-semibold text-brand-text">
+                          {formatCurrency(invoice.totalAmount)}
+                        </span>
+                      </>
+                    ) : null
+                  }
+                />
+                {invoiceExpanded && (
+                  <div className="border-t border-brand-border p-4">
+                    {invoice ? (
+                      <InvoiceViewer
+                        jobId={job.jobId}
+                        invoice={invoice}
+                        onStatusChanged={(updated) => {
+                          setInvoice(updated);
+                          if (updated.status === 'Paid') {
+                            onStatusUpdated(job.jobId, currentStatus);
+                          }
+                        }}
+                      />
+                    ) : currentStatus === 'Completed' ? (
+                      <InvoiceCreator
+                        jobId={job.jobId}
+                        clientName={details.clientName}
+                        quoteItems={quoteState?.items ?? []}
+                        quoteTotal={quoteState?.quote.totalAmount ?? 0}
+                        onCreated={(newInvoice) => {
+                          setInvoice(newInvoice);
+                          onStatusUpdated(job.jobId, 'Invoiced');
+                        }}
+                      />
+                    ) : (
+                      <p className="text-sm text-brand-muted">
+                        La fattura può essere emessa quando il lavoro è completato.{' '}
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium text-white ${STATUS_COLORS[currentStatus]}`}>
+                          {STATUS_LABELS[currentStatus]}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                )}
               </section>
             </div>
           ) : (
@@ -300,6 +446,16 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
           )}
         </div>
       </div>
+
+      {/* Lightbox — rendered outside the panel to cover the full screen */}
+      {lightboxIdx !== null && photos.length > 0 && (
+        <PhotoLightbox
+          photos={photos}
+          initialIndex={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+          onPhotoUpdated={handlePhotoUpdated}
+        />
+      )}
     </>
   );
 }
