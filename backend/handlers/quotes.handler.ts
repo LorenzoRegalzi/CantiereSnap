@@ -410,9 +410,15 @@ async function editQuote(
             ExpressionAttributeValues: { ':total': totalAmount, ':count': newItems.length, ':now': now },
           },
         },
-        ...oldItems.map((item) => ({
-          Delete: { TableName: TABLE, Key: { PK: pk, SK: item.SK as string } },
-        })),
+        // Only delete items whose SK won't be overwritten by a Put in the same transaction
+        ...(() => {
+          const newSKs = new Set(newItems.map((item) => `QUOTE#ITEM#${padSeq(item.seq)}`));
+          return oldItems
+            .filter((item) => !newSKs.has(item.SK as string))
+            .map((item) => ({
+              Delete: { TableName: TABLE, Key: { PK: pk, SK: item.SK as string } },
+            }));
+        })(),
         ...newItems.map((item) => ({
           Put: {
             TableName: TABLE,

@@ -8,6 +8,7 @@ import {
   TransactWriteCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { docClient } from '../shared/dynamodb';
+import { getPresignedUrl } from '../shared/s3';
 import {
   ok,
   created,
@@ -18,6 +19,7 @@ import {
 } from '../shared/response';
 
 const TABLE = process.env.TABLE_NAME!;
+const BUCKET = process.env.BUCKET_NAME!;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -412,16 +414,19 @@ async function getJobDetails(userId: string, jobId: string): Promise<APIGatewayP
       lineTotal: i.lineTotal,
     }));
 
-  const photos = children
-    .filter((i) => i.entityType === 'Photo')
-    .map((i) => ({
+  const photoItems = children.filter((i) => i.entityType === 'Photo' && !i.deletedAt);
+  const photos = await Promise.all(
+    photoItems.map(async (i) => ({
       photoId: i.photoId,
       tag: i.tag,
-      s3Key: i.s3Key,
-      aiDescription: i.aiDescription,
-      aiDescriptionEdited: i.aiDescriptionEdited,
+      mimeType: i.mimeType ?? null,
+      sizeBytes: i.sizeBytes ?? null,
+      imageUrl: await getPresignedUrl(BUCKET, i.s3Key as string),
+      aiDescription: i.aiDescription ?? null,
+      aiDescriptionEdited: i.aiDescriptionEdited ?? false,
       uploadedAt: i.uploadedAt,
-    }));
+    })),
+  );
 
   const materials = children
     .filter((i) => i.entityType === 'Material')
@@ -449,7 +454,7 @@ async function getJobDetails(userId: string, jobId: string): Promise<APIGatewayP
     }));
 
   return ok({
-    job: toJobResponse(headerResult.Item as Partial<JobItem>),
+    ...toJobResponse(headerResult.Item as Partial<JobItem>),
     statusHistory,
     quote: quoteMeta
       ? {

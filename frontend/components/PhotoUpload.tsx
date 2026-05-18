@@ -59,11 +59,12 @@ export default function PhotoUpload({ jobId, onUploaded }: PhotoUploadProps) {
       });
 
       // Step 2: PUT raw file to S3
-      await fetch(urlData.uploadUrl, {
+      const s3Res = await fetch(urlData.uploadUrl, {
         method: 'PUT',
         headers: urlData.headers,
         body: file,
       });
+      if (!s3Res.ok) throw new Error(`S3 upload failed: ${s3Res.status}`);
 
       setStep('ai-analysis');
 

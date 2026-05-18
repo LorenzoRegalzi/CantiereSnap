@@ -96,6 +96,7 @@ export class ApiStack extends cdk.Stack {
     }));
 
     props.table.grantReadWriteData(jobsFn);
+    props.bucket.grantRead(jobsFn);   // presigned GET URLs for photos in job details
     props.table.grantReadWriteData(clientsFn);
     props.table.grantReadWriteData(quotesFn);
     props.table.grantReadWriteData(photosFn);

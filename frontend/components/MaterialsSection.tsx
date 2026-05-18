@@ -68,14 +68,15 @@ export default function MaterialsSection({
     setItems(nextItems);
 
     try {
-      const { data } = await apiClient.put<{ items: Material[]; totalCost: number }>(
+      const { data } = await apiClient.put<Material>(
         `/jobs/${jobId}/materials/${materialId}`,
         update
       );
-      // Use server-computed totals
-      setItems(data.items ?? nextItems);
-      setTotalCost(data.totalCost ?? totalCost);
-      onMaterialsChanged(data.items ?? nextItems, data.totalCost ?? totalCost);
+      const mergedItems = nextItems.map((m) => m.materialId === materialId ? data : m);
+      const newTotal = Math.round(mergedItems.reduce((s, m) => s + m.cost, 0) * 100) / 100;
+      setItems(mergedItems);
+      setTotalCost(newTotal);
+      onMaterialsChanged(mergedItems, newTotal);
     } catch {
       setItems(items);
       setAlert("Errore durante il salvataggio.");
@@ -90,7 +91,7 @@ export default function MaterialsSection({
     if (Object.keys(errors).length > 0) { setAddErrors(errors); return; }
 
     try {
-      const { data } = await apiClient.post<{ items: Material[]; totalCost: number }>(
+      const { data } = await apiClient.post<Material>(
         `/jobs/${jobId}/materials`,
         {
           itemName: addDraft.itemName.trim(),
@@ -98,9 +99,11 @@ export default function MaterialsSection({
           cost: parseFloat(addDraft.cost),
         }
       );
-      setItems(data.items ?? items);
-      setTotalCost(data.totalCost ?? totalCost);
-      onMaterialsChanged(data.items ?? items, data.totalCost ?? totalCost);
+      const newItems = [...items, data];
+      const newTotal = Math.round(newItems.reduce((s, m) => s + m.cost, 0) * 100) / 100;
+      setItems(newItems);
+      setTotalCost(newTotal);
+      onMaterialsChanged(newItems, newTotal);
       setAdding(false);
       setAddDraft({ itemName: '', quantity: '', cost: '' });
       setAddErrors({});

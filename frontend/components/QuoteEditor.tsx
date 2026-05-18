@@ -92,16 +92,22 @@ function EditableCell({
 }
 
 // Persist the full items array to the backend in a single call.
-async function saveItems(jobId: string, items: QuoteItem[]): Promise<void> {
-  await apiClient.post(`/jobs/${jobId}/quote/items`, {
-    items: items.map(({ seq, description, quantity, unit, unitPrice }) => ({
-      seq,
-      description,
-      quantity,
-      unit,
-      unitPrice,
-    })),
-  });
+// Returns the server's canonical items (re-sequenced from 1) so callers
+// can keep local state in sync with the stored sequence numbers.
+async function saveItems(jobId: string, items: QuoteItem[]): Promise<QuoteItem[]> {
+  const { data } = await apiClient.post<{ quote: Quote; items: QuoteItem[] }>(
+    `/jobs/${jobId}/quote/items`,
+    {
+      items: items.map(({ seq, description, quantity, unit, unitPrice }) => ({
+        seq,
+        description,
+        quantity,
+        unit,
+        unitPrice,
+      })),
+    },
+  );
+  return data.items;
 }
 
 export default function QuoteEditor({ jobId, quote, items: initialItems, readOnly = false, onQuoteUpdated }: QuoteEditorProps) {
@@ -157,7 +163,8 @@ export default function QuoteEditor({ jobId, quote, items: initialItems, readOnl
     setItems(nextItems);
 
     try {
-      await saveItems(jobId, nextItems);
+      const saved = await saveItems(jobId, nextItems);
+      setItems(saved);
     } catch {
       setItems(items);
       setAlert({ variant: 'error', message: 'Errore durante il salvataggio della modifica.' });
@@ -169,7 +176,8 @@ export default function QuoteEditor({ jobId, quote, items: initialItems, readOnl
     setItems(nextItems);
     setConfirmDeleteSeq(null);
     try {
-      await saveItems(jobId, nextItems);
+      const saved = await saveItems(jobId, nextItems);
+      setItems(saved);
     } catch {
       setItems(items);
       setAlert({ variant: 'error', message: "Errore durante l'eliminazione della voce." });
@@ -207,7 +215,8 @@ export default function QuoteEditor({ jobId, quote, items: initialItems, readOnl
     setNewItemErrors({});
 
     try {
-      await saveItems(jobId, nextItems);
+      const saved = await saveItems(jobId, nextItems);
+      setItems(saved);
     } catch {
       setItems(items);
       setAlert({ variant: 'error', message: "Errore durante l'aggiunta della voce." });

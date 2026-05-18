@@ -141,8 +141,8 @@ export default function CreateJobModal({ onClose, onCreated }: CreateJobModalPro
 
   function validateJobForm(): boolean {
     const errs: Partial<JobForm> = {};
-    if (!jobForm.description.trim() || jobForm.description.trim().length < 10)
-      errs.description = 'Descrizione obbligatoria (min. 10 caratteri)';
+    if (!jobForm.description.trim() || jobForm.description.trim().length < 20)
+      errs.description = 'La descrizione deve avere almeno 20 caratteri (necessario per la generazione del preventivo AI).';
     if (!jobForm.address.trim() || jobForm.address.trim().length < 5)
       errs.address = 'Indirizzo obbligatorio (min. 5 caratteri)';
     if (!jobForm.targetDate) errs.targetDate = 'Data prevista obbligatoria';
