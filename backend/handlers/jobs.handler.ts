@@ -8,6 +8,7 @@ import {
   TransactWriteCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { docClient } from '../shared/dynamodb';
+import { getPresignedUrl } from '../shared/s3';
 import {
   ok,
   created,
@@ -18,6 +19,7 @@ import {
 } from '../shared/response';
 
 const TABLE = process.env.TABLE_NAME!;
+const BUCKET = process.env.BUCKET_NAME!;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -224,11 +226,12 @@ async function listJobs(
         'status',
       );
 
-    const filterValues: Record<string, unknown> = {};
-    let filterExpr: string | undefined;
+    // Always exclude soft-deleted jobs; optionally apply search filter.
+    const filterValues: Record<string, unknown> = { ':cancelled': 'Cancelled' };
+    let filterExpr = '#jobStatus <> :cancelled';
     if (search) {
       filterValues[':search'] = search;
-      filterExpr = 'contains(description, :search) OR contains(clientName, :search)';
+      filterExpr += ' AND (contains(description, :search) OR contains(clientName, :search))';
     }
 
     const results = await Promise.all(
@@ -243,7 +246,8 @@ async function listJobs(
               ':prefix': `JOB#${status}#`,
               ...filterValues,
             },
-            ...(filterExpr ? { FilterExpression: filterExpr } : {}),
+            FilterExpression: filterExpr,
+            ExpressionAttributeNames: { '#jobStatus': 'status' },
             Limit: limit,
             ExclusiveStartKey: exclusiveStartKey,
           }),
@@ -254,66 +258,94 @@ async function listJobs(
     items = results.flatMap((r) => (r.Items ?? []) as PartitionItem[]).slice(0, limit);
     lastKey = results[results.length - 1]?.LastEvaluatedKey as Record<string, unknown> | undefined;
   } else if (startDate || endDate) {
-    const exprValues: Record<string, unknown> = { ':pk': `USER_JOBS#${userId}` };
-    let keyCondition: string;
-
-    if (startDate && endDate) {
-      keyCondition = 'GSI2PK = :pk AND GSI2SK BETWEEN :start AND :end';
-      exprValues[':start'] = startDate;
-      exprValues[':end'] = endDate;
-    } else if (startDate) {
-      keyCondition = 'GSI2PK = :pk AND GSI2SK >= :start';
-      exprValues[':start'] = startDate;
-    } else {
-      keyCondition = 'GSI2PK = :pk AND GSI2SK <= :end';
-      exprValues[':end'] = endDate;
-    }
-
-    if (search) exprValues[':search'] = search;
-
-    const result = await docClient.send(
-      new QueryCommand({
-        TableName: TABLE,
-        IndexName: 'DueDateIndex',
-        KeyConditionExpression: keyCondition,
-        ExpressionAttributeValues: exprValues,
-        ...(search
-          ? { FilterExpression: 'contains(description, :search) OR contains(clientName, :search)' }
-          : {}),
-        Limit: limit,
-        ExclusiveStartKey: exclusiveStartKey,
-      }),
-    );
-    items = (result.Items ?? []) as PartitionItem[];
-    lastKey = result.LastEvaluatedKey as Record<string, unknown> | undefined;
-  } else {
-    // Default: main table, newest first, excluding soft-deleted jobs
-    const exprValues: Record<string, unknown> = {
-      ':pk': `USER#${userId}`,
-      ':prefix': 'JOB#',
-      ':cancelled': 'Cancelled',
-    };
+    // DueDateIndex only projects a small attribute set (designed for invoice notifications)
+    // and GSI2SK stores createdAt, not targetDate.  Use StatusIndex instead — it projects
+    // ALL attributes — and apply a FilterExpression on targetDate (YYYY-MM-DD string).
+    const filterValues: Record<string, unknown> = { ':cancelled': 'Cancelled' };
     let filterExpr = '#jobStatus <> :cancelled';
 
+    if (startDate && endDate) {
+      filterExpr += ' AND targetDate BETWEEN :start AND :end';
+      filterValues[':start'] = startDate;
+      filterValues[':end'] = endDate;
+    } else if (startDate) {
+      filterExpr += ' AND targetDate >= :start';
+      filterValues[':start'] = startDate;
+    } else {
+      filterExpr += ' AND targetDate <= :end';
+      filterValues[':end'] = endDate;
+    }
+
     if (search) {
-      exprValues[':search'] = search;
+      filterValues[':search'] = search;
       filterExpr += ' AND (contains(description, :search) OR contains(clientName, :search))';
     }
 
-    const result = await docClient.send(
-      new QueryCommand({
-        TableName: TABLE,
-        KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)',
-        ExpressionAttributeValues: exprValues,
-        ExpressionAttributeNames: { '#jobStatus': 'status' },
-        FilterExpression: filterExpr,
-        Limit: limit,
-        ExclusiveStartKey: exclusiveStartKey,
-        ScanIndexForward: false,
-      }),
+    const allStatuses = [...VALID_STATUSES];
+    const results = await Promise.all(
+      allStatuses.map((status) =>
+        docClient.send(
+          new QueryCommand({
+            TableName: TABLE,
+            IndexName: 'StatusIndex',
+            KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
+            ExpressionAttributeValues: {
+              ':pk': `USER#${userId}`,
+              ':prefix': `JOB#${status}#`,
+              ...filterValues,
+            },
+            FilterExpression: filterExpr,
+            ExpressionAttributeNames: { '#jobStatus': 'status' },
+            Limit: limit,
+            ExclusiveStartKey: exclusiveStartKey,
+            ScanIndexForward: false,
+          }),
+        ),
+      ),
     );
-    items = (result.Items ?? []) as PartitionItem[];
-    lastKey = result.LastEvaluatedKey as Record<string, unknown> | undefined;
+
+    items = results.flatMap((r) => (r.Items ?? []) as PartitionItem[]).slice(0, limit);
+    lastKey = results[results.length - 1]?.LastEvaluatedKey as Record<string, unknown> | undefined;
+  } else {
+    // Default: GSI-1, all statuses, newest first, excluding soft-deleted jobs.
+    // The main-table query (PK = USER#userId, SK begins_with JOB#) is unreliable
+    // because DynamoDB's Limit counts *scanned* items before FilterExpression is
+    // applied, and CLIENT#* / COUNTER#* items share the same PK and consume the
+    // Limit before any JOB# items are reached.  GSI-1 is keyed on GSI1PK =
+    // USER#userId so it only contains Job items — no cross-entity contamination.
+    const allStatuses = [...VALID_STATUSES];
+    const filterValues: Record<string, unknown> = { ':cancelled': 'Cancelled' };
+    let filterExpr = '#jobStatus <> :cancelled';
+
+    if (search) {
+      filterValues[':search'] = search;
+      filterExpr += ' AND (contains(description, :search) OR contains(clientName, :search))';
+    }
+
+    const results = await Promise.all(
+      allStatuses.map((status) =>
+        docClient.send(
+          new QueryCommand({
+            TableName: TABLE,
+            IndexName: 'StatusIndex',
+            KeyConditionExpression: 'GSI1PK = :pk AND begins_with(GSI1SK, :prefix)',
+            ExpressionAttributeValues: {
+              ':pk': `USER#${userId}`,
+              ':prefix': `JOB#${status}#`,
+              ...filterValues,
+            },
+            ExpressionAttributeNames: { '#jobStatus': 'status' },
+            FilterExpression: filterExpr,
+            Limit: limit,
+            ExclusiveStartKey: exclusiveStartKey,
+            ScanIndexForward: false,
+          }),
+        ),
+      ),
+    );
+
+    items = results.flatMap((r) => (r.Items ?? []) as PartitionItem[]).slice(0, limit);
+    lastKey = results[results.length - 1]?.LastEvaluatedKey as Record<string, unknown> | undefined;
   }
 
   return ok({
@@ -382,16 +414,19 @@ async function getJobDetails(userId: string, jobId: string): Promise<APIGatewayP
       lineTotal: i.lineTotal,
     }));
 
-  const photos = children
-    .filter((i) => i.entityType === 'Photo')
-    .map((i) => ({
+  const photoItems = children.filter((i) => i.entityType === 'Photo' && !i.deletedAt);
+  const photos = await Promise.all(
+    photoItems.map(async (i) => ({
       photoId: i.photoId,
       tag: i.tag,
-      s3Key: i.s3Key,
-      aiDescription: i.aiDescription,
-      aiDescriptionEdited: i.aiDescriptionEdited,
+      mimeType: i.mimeType ?? null,
+      sizeBytes: i.sizeBytes ?? null,
+      imageUrl: await getPresignedUrl(BUCKET, i.s3Key as string),
+      aiDescription: i.aiDescription ?? null,
+      aiDescriptionEdited: i.aiDescriptionEdited ?? false,
       uploadedAt: i.uploadedAt,
-    }));
+    })),
+  );
 
   const materials = children
     .filter((i) => i.entityType === 'Material')
@@ -419,7 +454,7 @@ async function getJobDetails(userId: string, jobId: string): Promise<APIGatewayP
     }));
 
   return ok({
-    job: toJobResponse(headerResult.Item as Partial<JobItem>),
+    ...toJobResponse(headerResult.Item as Partial<JobItem>),
     statusHistory,
     quote: quoteMeta
       ? {
@@ -614,18 +649,35 @@ async function updateJobStatus(
 async function deleteJob(userId: string, jobId: string): Promise<APIGatewayProxyResult> {
   const numId = parseInt(jobId, 10);
   if (isNaN(numId)) return notFound('Job not found.');
+  const padded = padJobId(numId);
+
+  // Fetch createdAt so we can build the updated GSI1SK.
+  const current = await docClient.send(
+    new GetCommand({
+      TableName: TABLE,
+      Key: { PK: `USER#${userId}`, SK: `JOB#${padded}` },
+      ProjectionExpression: 'createdAt, #jobStatus',
+      ExpressionAttributeNames: { '#jobStatus': 'status' },
+    }),
+  );
+  if (!current.Item || current.Item.status === 'Cancelled') return notFound('Job not found.');
+
+  const now = new Date().toISOString();
+  const createdAt = current.Item.createdAt as string;
 
   try {
     await docClient.send(
       new UpdateCommand({
         TableName: TABLE,
-        Key: { PK: `USER#${userId}`, SK: `JOB#${padJobId(numId)}` },
-        UpdateExpression: 'SET #jobStatus = :cancelled, updatedAt = :now',
+        Key: { PK: `USER#${userId}`, SK: `JOB#${padded}` },
+        // Update GSI1SK so the job is removed from all valid-status index ranges.
+        UpdateExpression: 'SET #jobStatus = :cancelled, GSI1SK = :gsi1sk, updatedAt = :now',
         ConditionExpression: 'attribute_exists(PK) AND #jobStatus <> :cancelled',
         ExpressionAttributeNames: { '#jobStatus': 'status' },
         ExpressionAttributeValues: {
           ':cancelled': 'Cancelled',
-          ':now': new Date().toISOString(),
+          ':gsi1sk': `JOB#Cancelled#${createdAt}`,
+          ':now': now,
         },
       }),
     );

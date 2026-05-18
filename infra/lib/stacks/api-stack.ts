@@ -96,6 +96,7 @@ export class ApiStack extends cdk.Stack {
     }));
 
     props.table.grantReadWriteData(jobsFn);
+    props.bucket.grantRead(jobsFn);   // presigned GET URLs for photos in job details
     props.table.grantReadWriteData(clientsFn);
     props.table.grantReadWriteData(quotesFn);
     props.table.grantReadWriteData(photosFn);
@@ -212,7 +213,9 @@ export class ApiStack extends cdk.Stack {
 
     // ── /dashboard ───────────────────────────────────────────────────────────
     const dashboardRes = api.root.addResource('dashboard');
-    dashboardRes.addResource('analytics').addMethod('GET', int(dashboardFn), auth);
+    dashboardRes.addResource('summary').addMethod('GET', int(dashboardFn), auth);
+    dashboardRes.addResource('revenue').addMethod('GET', int(dashboardFn), auth);
+    dashboardRes.addResource('jobs-stats').addMethod('GET', int(dashboardFn), auth);
     dashboardRes.addResource('overdue').addMethod('GET', int(dashboardFn), auth);
 
     // ── /notifications ────────────────────────────────────────────────────────

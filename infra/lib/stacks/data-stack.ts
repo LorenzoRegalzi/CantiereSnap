@@ -77,12 +77,16 @@ export class DataStack extends cdk.Stack {
           expiration: cdk.Duration.days(365),
         },
       ],
-      // Presigned upload PUT requests originate from the browser
+      // Browser presigned-URL uploads (PUT) and direct GET/HEAD reads require CORS.
+      // allowedHeaders: ['*'] is needed because presigned PUTs include custom headers
+      // such as x-amz-meta-tag that must pass the preflight check.
+      // Restrict allowedOrigins in production to the CloudFront domain.
       cors: [
         {
-          allowedMethods: [s3.HttpMethods.PUT],
-          allowedOrigins: ['*'],
-          allowedHeaders: ['Content-Type'],
+          allowedMethods: [s3.HttpMethods.PUT, s3.HttpMethods.GET, s3.HttpMethods.HEAD],
+          allowedOrigins: isProd ? ['https://your-production-domain.com'] : ['*'],
+          allowedHeaders: ['*'],
+          exposedHeaders: ['ETag'],
           maxAge: 3000,
         },
       ],

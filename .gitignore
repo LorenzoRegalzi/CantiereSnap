@@ -1,6 +1,9 @@
 # Claude Code
 CLAUDE.md
 .claude/
+.claudeignore
+
+frontend/aws
 
 # CDK
 infra/cdk.out/

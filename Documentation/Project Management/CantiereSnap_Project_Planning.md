@@ -291,21 +291,28 @@
 
 ---
 
+# CantiereSnap – Frontend Development Status Update (18 May 2026)
+
+> Update to the Frontend Development section of `CantiereSnap_Project_Planning.md`
+> Replace the existing `### 🖥️ Frontend Development — June` section with the content below.
+
+---
+
 ### 🖥️ Frontend Development — June
 
-| Card | Due | Label |
-|---|---|---|
-| Next.js PWA Setup | 3 Jun | Frontend |
-| Auth Pages – Login & Registration | 6 Jun | Frontend |
-| Job Pipeline – Kanban Board UI | 11 Jun | Frontend |
-| AI Quote Generation Form | 15 Jun | Frontend |
-| Photo Gallery – Per Job Documentation | 19 Jun | Frontend |
-| Electronic Invoice Module (FatturaPA XML) | 24 Jun | Frontend |
-| Dashboard & Analytics | 28 Jun | Frontend |
+| Card | Due | Status | Label |
+|---|---|---|---|
+| Next.js PWA Setup | 3 Jun | ✅ Complete | Frontend |
+| Auth Pages – Login & Registration | 6 Jun | ✅ Complete | Frontend |
+| Job Pipeline – Kanban Board UI | 11 Jun | ✅ Complete | Frontend |
+| AI Quote Generation Form | 15 Jun | ✅ Complete | Frontend |
+| Photo Gallery – Per Job Documentation | 19 Jun | ✅ Complete | Frontend |
+| Electronic Invoice Module (FatturaPA XML) | 24 Jun | ✅ Complete | Frontend |
+| Dashboard & Analytics | 28 Jun | ✅ Complete | Frontend |
 
 **Card details:**
 
-**Next.js PWA Setup** – 3 Jun
+**Next.js PWA Setup** – 3 Jun ✅ Completed
 - Next.js project initialisation
 - PWA manifest + service worker
 - Tailwind CSS configuration
@@ -313,42 +320,89 @@
 - Environment variable management
 - CI/CD pipeline (GitHub Actions → S3)
 
-**Auth Pages – Login & Registration** – 6 Jun
+> ✅ Completed – 18 May 2026
+> 📂 GitHub: `/frontend/` (31 files, 10 static pages)
+> 📂 Key files: `lib/auth.tsx` (AuthProvider, useAuth, ID token storage), `lib/api-client.ts` (Axios + 401 refresh queue + fetchAllPages), `public/sw.js` (cache-first shell, network-first API), `.github/workflows/deploy-frontend.yml`
+> 🐛 Claude Code adapted prompt: `getAccessToken()` → `getIdToken()` (read from CLAUDE.md that auth uses ID tokens), real staging URL wired from CLAUDE.md, SW hostname check instead of pathname for cross-origin API
+
+**Auth Pages – Login & Registration** – 6 Jun ✅ Completed
 - Login page
 - Registration page
 - Email verification flow
 - JWT storage and refresh logic
 - Protected route wrapper
 
-**Job Pipeline – Kanban Board UI** – 11 Jun
+> ✅ Completed – 18 May 2026
+> 📂 GitHub: `app/(auth)/login/page.tsx`, `app/(auth)/register/page.tsx`, `app/(auth)/verify/page.tsx`, `components/ProtectedRoute.tsx`, `components/ui/{Input,Button,Alert}.tsx`
+> 📊 Full auth flow tested end-to-end on staging: register → email verification → login → protected routes
+> 🐛 Fixed: 401 interceptor was triggering token refresh on /auth/* endpoints (wrong password caused silent redirect instead of error message)
+> 🐛 Fixed: .env.production had `/prod` stage (doesn't exist) → changed to `/staging`
+> 🐛 Fixed: SW cache-fallback swallowed API errors → API calls now bypass SW entirely
+
+**Job Pipeline – Kanban Board UI** – 11 Jun ✅ Completed
 - Kanban board component
 - Job card component (status, client, date)
 - Status transition with timestamp
 - Create new job modal
 - Filter by status / date
 
-**AI Quote Generation Form** – 15 Jun
+> ✅ Completed – 18 May 2026
+> 📂 GitHub: `app/(dashboard)/jobs/page.tsx`, `components/{JobCard,JobDetailPanel,CreateJobModal}.tsx`, `app/(dashboard)/layout.tsx` (dashboard shell with sidebar + responsive topbar)
+> 📊 5-column Kanban (Preventivo → Fatturato), skeleton loading, status chips, date range filter, search with debounce
+> 📊 Two-step job creation: client search/create → job details
+> 🐛 Fixed (backend): GET /jobs without status param returned empty — GSI-1 had no Cancelled guard, soft-deleted jobs consumed Limit budget
+> 🐛 Fixed (backend): Date range filter always empty — GSI-2 DueDateIndex had ProjectionType.INCLUDE missing critical fields (status, description). Rewrote to query StatusIndex with FilterExpression on targetDate
+> 🐛 Fixed (backend): Cancelled jobs polluting GSI — deleteJob didn't update GSI1SK. Fix: update to `JOB#Cancelled#` on soft delete
+
+**AI Quote Generation Form** – 15 Jun ✅ Completed
 - Free-text job description input
 - Loading state during AI generation
 - Preview generated quote (itemised table)
 - Edit / approve generated items
 - Download / send PDF button
 
-**Photo Gallery – Per Job Documentation** – 19 Jun
+> ✅ Completed – 18 May 2026
+> 📂 GitHub: `components/{QuoteGenerator,QuoteEditor}.tsx`, `lib/format.ts` (Italian number formatting)
+> 📊 AI generation with 4-message cycling loading animation (15-25s Claude API call)
+> 📊 Inline-editable table with click-to-edit cells, add/delete rows, IVA preview
+> 📊 PDF finalize + download + send-to-client email form
+> 🐛 Fixed: EditableCell defined inside QuoteEditor caused React remount on every re-render → extracted to top-level component
+> 🐛 Fixed (backend): TransactWriteItems issued Delete + Put for same key when item count unchanged → skip Delete for reused keys
+> 🐛 Fixed: Frontend kept stale seq numbers after backend re-sequencing → now replaces local state with server response after save
+> ⚠️ PDF formatting is basic (cosmetic improvement deferred)
+> ⚠️ Email send blocked by SES sandbox (staging limitation, not a bug)
+
+**Photo Gallery – Per Job Documentation** – 19 Jun ✅ Completed
 - Photo upload widget (presigned URL)
 - Gallery grid per job
 - Before / After tagging
 - AI description display
 - Lightbox viewer
 
-**Electronic Invoice Module (FatturaPA XML)** – 24 Jun
+> ✅ Completed – 18 May 2026
+> 📂 GitHub: `components/{PhotoUpload,PhotoGallery,PhotoLightbox,MaterialsSection,ReceiptScanner}.tsx`
+> 📊 3-step presigned URL upload flow (get URL → PUT to S3 → save metadata + AI description)
+> 📊 Camera input with `capture="environment"` for on-site rear camera
+> 📊 OCR receipt scanning via Claude Vision with confidence scoring
+> 🐛 Fixed: S3 CORS missing on data bucket → added CORS rules in CDK DataStack
+> 🐛 Fixed: Presigned URL signed without `x-amz-meta-tag` header → S3 returned 403 SignatureDoesNotMatch → 150-byte error XML saved instead of image. Frontend didn't check fetch response status.
+> ⚠️ AI photo description display may need frontend fix (not showing in lightbox) — deferred to July testing
+
+**Electronic Invoice Module (FatturaPA XML)** – 24 Jun ✅ Completed
 - Invoice creation form (client data, line items)
 - FatturaPA XML generation via backend
 - XML preview / download
 - Invoice status tracker (Sent, Paid, Overdue)
 - Link invoice to job in pipeline
 
-**Dashboard & Analytics** – 28 Jun
+> ✅ Completed – 18 May 2026
+> 📂 GitHub: `components/{InvoiceCreator,InvoiceViewer}.tsx`, `app/(dashboard)/invoices/page.tsx`, `app/(dashboard)/profile/page.tsx`
+> 📊 Fully tested end-to-end: profile fiscal data saved → job advanced to Completed → invoice created → FatturaPA XML generated and downloaded
+> 📊 Pre-flight profile check blocks invoice creation if fiscal data missing (Partita IVA, Codice Fiscale, Regime Fiscale)
+> 📊 Invoice status tracker: Draft → Sent → Paid/Overdue with colored badges
+> 📊 Profile settings page with Italian fiscal data (RF01/RF02/RF04/RF19 regime fiscale dropdown)
+
+**Dashboard & Analytics** – 28 Jun ✅ Completed
 - Monthly revenue chart
 - Job completion rate
 - Average quote-to-invoice time
@@ -356,6 +410,50 @@
 - Overdue invoices alert widget
 - Date range filter
 
+> ✅ Completed – 18 May 2026
+> 📂 GitHub: `app/(dashboard)/analytics/page.tsx`, `components/dashboard/{KpiCard,RevenueChart,JobDistributionChart,OverdueWidget}.tsx`
+> 📊 4 KPI cards (revenue, completion rate, avg quote-to-invoice days, overdue count)
+> 📊 Recharts bar chart for monthly revenue, donut chart for job distribution by status
+> 📊 Date range selector with quick presets (this month, 3/6/12 months)
+> 📊 Parallel data fetching from 3 dashboard endpoints
+> 🐛 Fixed: CORS missing on /dashboard/* endpoints → redeployed ApiStack
+
+---
+
+### Known Issues Deferred to July Testing
+
+| Issue | Type | Priority |
+|---|---|---|
+| AI photo description not displayed in lightbox | Frontend | Medium |
+| Email delivery blocked by SES sandbox | AWS Config | Low (staging only) |
+| Quote PDF basic formatting | Cosmetic | Low |
+| Job detail panel missing client/address fields (intermittent) | Frontend | Medium |
+| Manual material addition (intermittent) | Frontend | Medium |
+
+---
+
+### Frontend Bug Count Summary
+
+| Phase | Bugs Found | Bugs Fixed | Open |
+|---|---|---|---|
+| Backend (May) | 9 | 9 | 0 |
+| Frontend (June) | 8 | 8 | 0 |
+| Integration frontend↔backend | 5 | 5 | 0 |
+| **Total** | **22** | **22** | **0 critical** |
+
+> Note: 5 minor/cosmetic issues deferred to July testing phase (see table above).
+
+---
+
+### Update to Timeline Overview
+
+| Phase | Period | Status |
+|---|---|---|
+| Documentation | April 2026 | ✅ Complete (6/6 cards done) |
+| Backend Development | May 2026 | ✅ Complete (9/9 cards done) |
+| Frontend Development | June 2026 | ✅ Complete (7/7 cards done) |
+| Testing & Thesis Writing | July 2026 | 🔲 Next |
+| Review & Submission | August 2026 (buffer) | 🔲 Not started |
 ---
 
 ### 🧪 Testing & Thesis — July
