@@ -48,13 +48,31 @@ export interface QuoteItem {
 }
 
 export interface Quote {
-  jobId: string;
-  status: 'Draft' | 'Finalized';
-  items: QuoteItem[];
+  jobId?: string;
+  status: 'Draft' | 'Approved' | 'Sent';
   totalAmount: number;
-  generatedAt?: string;
-  finalizedAt?: string;
+  currency?: string;
+  generationTimeMs?: number;
+  inputLength?: number;
+  itemCount: number;
+  model?: string;
+  pdfS3Key?: string | null;
   pdfUrl?: string;
+  sentAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface QuoteGenerateResponse {
+  quote: Quote;
+  items: QuoteItem[];
+}
+
+export interface QuoteFinalizeResponse {
+  pdfUrl: string;
+  status: string;
+  totalAmount: number;
+  itemCount: number;
 }
 
 export interface Invoice {

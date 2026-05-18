@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { X, MapPin, Calendar, ArrowRight } from 'lucide-react';
+import { X, MapPin, Calendar, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import apiClient from '@/lib/api-client';
-import { Job, JobDetails, JobStatus } from '@/types';
+import { Job, JobDetails, JobStatus, Quote, QuoteItem } from '@/types';
 import { STATUS_COLORS, STATUS_LABELS, NEXT_STATUS, ADVANCE_LABELS } from './JobCard';
 import Alert from './ui/Alert';
 import Button from './ui/Button';
+import QuoteGenerator from './QuoteGenerator';
+import QuoteEditor from './QuoteEditor';
+import { formatCurrency } from '@/lib/format';
 
 interface JobDetailPanelProps {
   job: Job;
@@ -32,11 +35,25 @@ function DetailSkeleton() {
   );
 }
 
+const QUOTE_STATUS_LABELS: Record<string, string> = {
+  Draft: 'Bozza',
+  Approved: 'Approvato',
+  Sent: 'Inviato',
+};
+
+const QUOTE_STATUS_COLORS: Record<string, string> = {
+  Draft: 'bg-amber-100 text-amber-800',
+  Approved: 'bg-teal-100 text-teal-800',
+  Sent: 'bg-blue-100 text-blue-800',
+};
+
 export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDetailPanelProps) {
   const [details, setDetails] = useState<JobDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
   const [alert, setAlert] = useState<{ variant: 'success' | 'error'; message: string } | null>(null);
+  const [quoteState, setQuoteState] = useState<{ quote: Quote; items: QuoteItem[] } | null>(null);
+  const [quoteExpanded, setQuoteExpanded] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,7 +63,13 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
     apiClient
       .get<JobDetails>(`/jobs/${job.jobId}/details`)
       .then(({ data }) => {
-        if (!cancelled) setDetails(data);
+        if (!cancelled) {
+          setDetails(data);
+          // If the details include a quote, seed the quote state
+          if (data.quote) {
+            setQuoteState({ quote: data.quote, items: (data.quote as unknown as { items?: QuoteItem[] }).items ?? [] });
+          }
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -204,15 +227,58 @@ export default function JobDetailPanel({ job, onClose, onStatusUpdated }: JobDet
                 </section>
               )}
 
+              {/* Preventivo section */}
+              <section className="rounded-lg border border-brand-border">
+                {/* Collapsible header */}
+                <button
+                  onClick={() => setQuoteExpanded((o) => !o)}
+                  className="flex w-full items-center justify-between px-4 py-3 text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-brand-muted">
+                      Preventivo
+                    </span>
+                    {quoteState && (
+                      <>
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${QUOTE_STATUS_COLORS[quoteState.quote.status]}`}>
+                          {QUOTE_STATUS_LABELS[quoteState.quote.status]}
+                        </span>
+                        <span className="text-xs font-semibold text-brand-text">
+                          {formatCurrency(quoteState.quote.totalAmount)}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  {quoteExpanded ? (
+                    <ChevronUp className="h-4 w-4 text-brand-muted" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-brand-muted" />
+                  )}
+                </button>
+
+                {quoteExpanded && (
+                  <div className="border-t border-brand-border p-4">
+                    {!quoteState ? (
+                      <QuoteGenerator
+                        jobId={job.jobId}
+                        jobDescription={details.description || job.description}
+                        onGenerated={(quote, items) => setQuoteState({ quote, items })}
+                      />
+                    ) : (
+                      <QuoteEditor
+                        jobId={job.jobId}
+                        quote={quoteState.quote}
+                        items={quoteState.items}
+                        readOnly={quoteState.quote.status === 'Sent'}
+                        onQuoteUpdated={(quote, items) => setQuoteState({ quote, items })}
+                      />
+                    )}
+                  </div>
+                )}
+              </section>
+
               {/* Placeholder sections for future cards */}
               <section className="space-y-3">
-                <div className="rounded-lg border border-dashed border-brand-border p-4">
-                  <p className="text-xs font-semibold uppercase text-brand-muted">Preventivo</p>
-                  <p className="mt-1 text-sm text-brand-muted">Nessun preventivo generato.</p>
-                  <button className="mt-1 cursor-not-allowed text-xs text-brand-accent opacity-50" disabled>
-                    Genera preventivo
-                  </button>
-                </div>
                 <div className="rounded-lg border border-dashed border-brand-border p-4">
                   <p className="text-xs font-semibold uppercase text-brand-muted">Foto</p>
                   <p className="mt-1 text-sm text-brand-muted">Nessuna foto caricata.</p>
