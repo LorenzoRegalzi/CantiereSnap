@@ -24,6 +24,11 @@
       "account": "491545415092",
       "region": "eu-south-1",
       "sesFromEmail": "noreply@cantieresnap.it"
+    },
+    "benchmark": {
+      "account": "491545415092",
+      "region": "eu-south-1",
+      "sesFromEmail": "noreply-staging@cantieresnap.it"
     }
   }
 }

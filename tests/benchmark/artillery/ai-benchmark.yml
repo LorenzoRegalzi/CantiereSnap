@@ -1,0 +1,68 @@
+# AI Quote Generation Benchmark
+#
+# Key architectural difference:
+#   Lambda:  POST returns 202 immediately → client must poll GET /jobs/{jobId}/quote
+#            until status changes from "processing" to "Draft" (~25 seconds)
+#   Fargate: POST returns 201 with full quote data in one ~25-second synchronous response
+#
+# Run at low concurrency — Claude API has rate limits and each call costs ~$0.03.
+# Total cost estimate: 30 calls × $0.03 = ~$0.90 per platform run.
+#
+# Metrics to collect:
+#   Lambda:  time_to_202 (fast) + polling_duration (total time-to-data)
+#   Fargate: response_time (total time-to-data in single request)
+
+# ── Lambda AI benchmark ────────────────────────────────────────────────────────
+# Run: artillery run --variables "{...}" ai-benchmark.yml
+# Add --config '{"target":"https://ec0ws3spi8.execute-api.eu-south-1.amazonaws.com/staging"}' for Lambda
+# Add --config '{"target":"http://FARGATE_ALB_URL"}' for Fargate
+
+config:
+  target: "https://ec0ws3spi8.execute-api.eu-south-1.amazonaws.com/staging"
+  phases:
+    # 1 request every 15 seconds for 7.5 minutes = 30 requests
+    - duration: 450
+      arrivalRate: 1
+      maxVusers: 1
+      name: "AI generation (low rate)"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ accessToken }}"
+  # AI calls are slow — set a generous timeout
+  timeout: 90
+
+scenarios:
+  - name: "POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)"
+    flow:
+      # Create a fresh job for each iteration so POST quote/generate never hits 409
+      - post:
+          url: "/jobs"
+          name: "POST /jobs (setup)"
+          json:
+            clientId: "{{ clientId }}"
+            description: "Benchmark AI job — rifacimento completo bagno principale con demolizione, massetto, impermeabilizzazione, nuove piastrelle, sanitari e box doccia"
+            address: "Via Benchmark AI, Torino (TO)"
+            targetDate: "2026-12-31"
+          capture:
+            - json: "$.jobId"
+              as: "benchmarkJobId"
+      - post:
+          url: "/jobs/{{ benchmarkJobId }}/quote/generate"
+          name: "POST quote/generate"
+          json:
+            description: "Rifacimento completo bagno principale: demolizione pavimento e rivestimenti esistenti, rifacimento massetto, impermeabilizzazione, posa nuove piastrelle ceramica a pavimento e parete, sostituzione sanitari e rubinetteria completa, installazione piatto doccia con box vetro"
+          capture:
+            - json: "$.status"
+              as: "generateStatus"
+      # Lambda returns 202 — poll until quote is ready
+      - loop:
+          - get:
+              url: "/jobs/{{ benchmarkJobId }}/quote"
+              name: "GET quote (polling)"
+              capture:
+                - json: "$.quote.status"
+                  as: "quoteStatus"
+          - think: 5
+        count: 12
+        whileTrue: "quoteStatus !== 'Draft' && quoteStatus !== 'failed'"

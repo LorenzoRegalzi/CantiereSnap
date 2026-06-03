@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.1",
+    "@aws-sdk/client-lambda": "^3.1057.0",
     "pdfkit": "^0.18.0"
   }
 }

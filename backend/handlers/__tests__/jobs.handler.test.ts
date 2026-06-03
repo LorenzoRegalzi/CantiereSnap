@@ -138,7 +138,13 @@ describe('POST /jobs — createJob', () => {
 
 describe('GET /jobs — listJobs', () => {
   it('returns all jobs (no filters)', async () => {
-    mockSend.mockResolvedValueOnce({ Items: [JOB_ITEM], LastEvaluatedKey: undefined });
+    // Handler fans out one QueryCommand per status (5 total) via Promise.all
+    mockSend
+      .mockResolvedValueOnce({ Items: [JOB_ITEM] }) // Quote
+      .mockResolvedValueOnce({ Items: [] })          // Accepted
+      .mockResolvedValueOnce({ Items: [] })          // InProgress
+      .mockResolvedValueOnce({ Items: [] })          // Completed
+      .mockResolvedValueOnce({ Items: [] });         // Invoiced
 
     const res = await handler(makeEvent('GET', '/jobs'), ctx);
     expect(res.statusCode).toBe(200);
@@ -159,15 +165,25 @@ describe('GET /jobs — listJobs', () => {
     expect(queryInput.ExpressionAttributeValues[':prefix']).toBe('JOB#Quote#');
   });
 
-  it('queries DueDateIndex when startDate/endDate are provided', async () => {
-    mockSend.mockResolvedValueOnce({ Items: [JOB_ITEM] });
+  it('queries StatusIndex with targetDate filter when startDate/endDate are provided', async () => {
+    // Bug fix: DueDateIndex projected too few fields; handler now uses StatusIndex with
+    // a FilterExpression on targetDate. One QueryCommand per status (5 total).
+    mockSend
+      .mockResolvedValueOnce({ Items: [JOB_ITEM] }) // Quote
+      .mockResolvedValueOnce({ Items: [] })          // Accepted
+      .mockResolvedValueOnce({ Items: [] })          // InProgress
+      .mockResolvedValueOnce({ Items: [] })          // Completed
+      .mockResolvedValueOnce({ Items: [] });         // Invoiced
 
     const res = await handler(
       makeEvent('GET', '/jobs', null, null, { startDate: '2026-05-01', endDate: '2026-05-31' }), ctx);
     expect(res.statusCode).toBe(200);
 
     const queryInput = mockSend.mock.calls[0][0].input;
-    expect(queryInput.IndexName).toBe('DueDateIndex');
+    expect(queryInput.IndexName).toBe('StatusIndex');
+    expect(queryInput.FilterExpression).toContain('targetDate');
+    expect(queryInput.ExpressionAttributeValues[':start']).toBe('2026-05-01');
+    expect(queryInput.ExpressionAttributeValues[':end']).toBe('2026-05-31');
   });
 
   it('returns 400 for an unknown status value', async () => {
@@ -178,7 +194,13 @@ describe('GET /jobs — listJobs', () => {
 
   it('returns a nextToken when more pages exist', async () => {
     const lastKey = { PK: 'USER#user-123', SK: 'JOB#00001' };
-    mockSend.mockResolvedValueOnce({ Items: [JOB_ITEM], LastEvaluatedKey: lastKey });
+    // Handler fans out 5 queries; nextToken comes from the last result's LastEvaluatedKey
+    mockSend
+      .mockResolvedValueOnce({ Items: [JOB_ITEM] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [], LastEvaluatedKey: lastKey });
 
     const res = await handler(makeEvent('GET', '/jobs'), ctx);
     expect(res.statusCode).toBe(200);
@@ -266,7 +288,8 @@ describe('GET /jobs/{jobId}/details — getJobDetails', () => {
     expect(res.statusCode).toBe(200);
 
     const body = JSON.parse(res.body);
-    expect(body.job.jobId).toBe(1);
+    // getJobDetails returns a flat response — job fields are at the top level
+    expect(body.jobId).toBe(1);
     expect(body.statusHistory).toHaveLength(1);
     expect(body.statusHistory[0].toStatus).toBe('Quote');
     expect(body.quote.totalAmount).toBe(2850);
@@ -412,29 +435,210 @@ describe('PATCH /jobs/{jobId}/status — updateJobStatus', () => {
 
 describe('DELETE /jobs/{jobId} — deleteJob', () => {
   it('soft-deletes the job and returns 200', async () => {
-    mockSend.mockResolvedValueOnce({});
+    // Bug fix: soft delete now reads createdAt first so GSI1SK can be updated to
+    // JOB#Cancelled#<createdAt>, removing the item from all valid-status index ranges.
+    mockSend
+      .mockResolvedValueOnce({ Item: { createdAt: '2026-05-01T10:00:00.000Z', status: 'Quote' } }) // GetItem
+      .mockResolvedValueOnce({});                                                                   // UpdateItem
 
     const res = await handler(makeEvent('DELETE', '/jobs/{jobId}', { jobId: '1' }), ctx);
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.body).message).toBeDefined();
 
-    const updateInput = mockSend.mock.calls[0][0].input;
+    const updateInput = mockSend.mock.calls[1][0].input;
     expect(updateInput.ExpressionAttributeValues[':cancelled']).toBe('Cancelled');
+    expect(updateInput.UpdateExpression).toContain('GSI1SK');
   });
 
-  it('returns 404 when job does not exist (ConditionalCheckFailed)', async () => {
+  it('returns 404 when job does not exist (ConditionalCheckFailed on update)', async () => {
+    // GetItem succeeds (item exists), but the conditional update fails concurrently
     const err = Object.assign(new Error('ConditionalCheckFailedException'), {
       name: 'ConditionalCheckFailedException',
     });
-    mockSend.mockRejectedValueOnce(err);
+    mockSend
+      .mockResolvedValueOnce({ Item: { createdAt: '2026-05-01T10:00:00.000Z', status: 'Quote' } }) // GetItem
+      .mockRejectedValueOnce(err);                                                                  // UpdateItem
 
     const res = await handler(makeEvent('DELETE', '/jobs/{jobId}', { jobId: '999' }), ctx);
     expect(res.statusCode).toBe(404);
+  });
+
+  it('returns 404 when job does not exist (GetItem returns nothing)', async () => {
+    mockSend.mockResolvedValueOnce({ Item: undefined });
+
+    const res = await handler(makeEvent('DELETE', '/jobs/{jobId}', { jobId: '999' }), ctx);
+    expect(res.statusCode).toBe(404);
+    expect(mockSend).toHaveBeenCalledTimes(1); // no UpdateItem attempted
   });
 
   it('returns 404 for a non-numeric jobId without calling DynamoDB', async () => {
     const res = await handler(makeEvent('DELETE', '/jobs/{jobId}', { jobId: 'abc' }), ctx);
     expect(res.statusCode).toBe(404);
     expect(mockSend).not.toHaveBeenCalled();
+  });
+});
+
+// ── Bug regression tests ──────────────────────────────────────────────────────
+// One test per backend bug found and fixed during the June 2026 frontend phase.
+
+describe('Regression: Cancelled guard on no-filter GSI-1 query', () => {
+  it('excludes Cancelled jobs via FilterExpression even when no status filter is given', async () => {
+    // Bug: the no-filter listJobs path queried the main table (PK = USER#userId) and
+    // had no FilterExpression, so Cancelled jobs appeared in results.
+    // Fix: query StatusIndex per-status with FilterExpression #jobStatus <> :cancelled.
+    mockSend
+      .mockResolvedValueOnce({ Items: [JOB_ITEM] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] });
+
+    await handler(makeEvent('GET', '/jobs'), ctx);
+
+    const queryInput = mockSend.mock.calls[0][0].input;
+    expect(queryInput.IndexName).toBe('StatusIndex');
+    expect(queryInput.FilterExpression).toContain(':cancelled');
+    expect(queryInput.ExpressionAttributeValues[':cancelled']).toBe('Cancelled');
+  });
+
+  it('does not query for Cancelled status prefix', async () => {
+    mockSend
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] });
+
+    await handler(makeEvent('GET', '/jobs'), ctx);
+
+    const prefixes = mockSend.mock.calls.map(
+      (call) => call[0].input.ExpressionAttributeValues[':prefix'],
+    );
+    expect(prefixes.every((p: string) => !p.includes('Cancelled'))).toBe(true);
+  });
+});
+
+describe('Regression: Date range filter uses StatusIndex (not DueDateIndex)', () => {
+  it('applies targetDate BETWEEN filter via FilterExpression, not a key condition', async () => {
+    // Bug: handler queried DueDateIndex whose GSI2SK stores createdAt (not targetDate)
+    // and projected too few attributes. Fix: use StatusIndex + FilterExpression on targetDate.
+    mockSend
+      .mockResolvedValueOnce({ Items: [JOB_ITEM] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] });
+
+    await handler(makeEvent('GET', '/jobs', null, null, { startDate: '2026-06-01', endDate: '2026-06-30' }), ctx);
+
+    const queryInput = mockSend.mock.calls[0][0].input;
+    expect(queryInput.IndexName).toBe('StatusIndex');
+    // targetDate filter must be in FilterExpression, not KeyConditionExpression
+    expect(queryInput.FilterExpression).toContain('targetDate');
+    expect(queryInput.KeyConditionExpression).not.toContain('targetDate');
+  });
+});
+
+// ── Additional branch coverage ─────────────────────────────────────────────────
+
+describe('GET /jobs — listJobs additional branches', () => {
+  it('applies startDate-only filter (no endDate)', async () => {
+    mockSend
+      .mockResolvedValueOnce({ Items: [JOB_ITEM] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] });
+
+    const res = await handler(makeEvent('GET', '/jobs', null, null, { startDate: '2026-06-01' }), ctx);
+    expect(res.statusCode).toBe(200);
+    const queryInput = mockSend.mock.calls[0][0].input;
+    expect(queryInput.FilterExpression).toContain(':start');
+    expect(queryInput.ExpressionAttributeValues[':start']).toBe('2026-06-01');
+    expect(queryInput.ExpressionAttributeValues[':end']).toBeUndefined();
+  });
+
+  it('applies endDate-only filter (no startDate)', async () => {
+    mockSend
+      .mockResolvedValueOnce({ Items: [JOB_ITEM] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] });
+
+    const res = await handler(makeEvent('GET', '/jobs', null, null, { endDate: '2026-06-30' }), ctx);
+    expect(res.statusCode).toBe(200);
+    const queryInput = mockSend.mock.calls[0][0].input;
+    expect(queryInput.FilterExpression).toContain(':end');
+    expect(queryInput.ExpressionAttributeValues[':end']).toBe('2026-06-30');
+    expect(queryInput.ExpressionAttributeValues[':start']).toBeUndefined();
+  });
+
+  it('applies search filter combined with status filter', async () => {
+    mockSend.mockResolvedValueOnce({ Items: [JOB_ITEM] });
+
+    const res = await handler(
+      makeEvent('GET', '/jobs', null, null, { status: 'Quote', search: 'bagno' }), ctx);
+    expect(res.statusCode).toBe(200);
+    const queryInput = mockSend.mock.calls[0][0].input;
+    expect(queryInput.FilterExpression).toContain(':search');
+    expect(queryInput.ExpressionAttributeValues[':search']).toBe('bagno');
+  });
+
+  it('applies search filter on no-filter path', async () => {
+    mockSend
+      .mockResolvedValueOnce({ Items: [JOB_ITEM] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] });
+
+    const res = await handler(makeEvent('GET', '/jobs', null, null, { search: 'idraulico' }), ctx);
+    expect(res.statusCode).toBe(200);
+    const queryInput = mockSend.mock.calls[0][0].input;
+    expect(queryInput.FilterExpression).toContain(':search');
+  });
+
+  it('ignores a malformed nextToken and proceeds without ExclusiveStartKey', async () => {
+    mockSend
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] })
+      .mockResolvedValueOnce({ Items: [] });
+
+    const res = await handler(makeEvent('GET', '/jobs', null, null, { nextToken: '!!!not-base64!!!' }), ctx);
+    expect(res.statusCode).toBe(200);
+    const queryInput = mockSend.mock.calls[0][0].input;
+    expect(queryInput.ExclusiveStartKey).toBeUndefined();
+  });
+
+  it('returns 400 when all supplied status values are invalid', async () => {
+    const res = await handler(makeEvent('GET', '/jobs', null, null, { status: 'Foo,Bar' }), ctx);
+    expect(res.statusCode).toBe(400);
+  });
+});
+
+describe('Unknown route', () => {
+  it('returns 404 for an unrecognised resource', async () => {
+    const res = await handler(makeEvent('GET', '/unknown-resource'), ctx);
+    expect(res.statusCode).toBe(404);
+  });
+});
+
+describe('Regression: Soft delete updates GSI1SK', () => {
+  it('UpdateExpression sets GSI1SK to JOB#Cancelled#<createdAt>', async () => {
+    // Bug: soft delete only set status = Cancelled but left GSI1SK = JOB#Quote#...
+    // so the job still appeared in GSI-1 range scans for Quote status.
+    const createdAt = '2026-05-01T10:00:00.000Z';
+    mockSend
+      .mockResolvedValueOnce({ Item: { createdAt, status: 'Quote' } })
+      .mockResolvedValueOnce({});
+
+    await handler(makeEvent('DELETE', '/jobs/{jobId}', { jobId: '1' }), ctx);
+
+    const updateInput = mockSend.mock.calls[1][0].input;
+    expect(updateInput.UpdateExpression).toMatch(/GSI1SK/);
+    expect(updateInput.ExpressionAttributeValues[':gsi1sk']).toBe(`JOB#Cancelled#${createdAt}`);
   });
 });

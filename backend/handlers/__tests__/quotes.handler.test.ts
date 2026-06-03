@@ -21,6 +21,15 @@ jest.mock('../../shared/logger', () => ({
   createLogger: () => ({ info: jest.fn(), warn: jest.fn(), error: jest.fn() }),
 }));
 
+// Lambda client mock — factory must NOT reference variables declared in this
+// file because jest.mock() is hoisted above all declarations.
+jest.mock('@aws-sdk/client-lambda', () => ({
+  LambdaClient: jest.fn().mockImplementation(() => ({
+    send: jest.fn().mockResolvedValue({}),
+  })),
+  InvokeCommand: jest.fn().mockImplementation((input) => input),
+}));
+
 const ctx = { awsRequestId: 'test-request-id' } as never;
 
 
@@ -136,108 +145,56 @@ const VALID_ITEMS_BODY = {
   ],
 };
 
-// ── POST /jobs/{jobId}/quote — generateQuote ──────────────────────────────────
+// ── POST /jobs/{jobId}/quote/generate — async dispatch (API path) ─────────────
+// The API handler now returns 202 immediately and fires a Lambda self-invocation.
+// The background Lambda does the actual Claude call (tested separately below).
 
-describe('POST /jobs/{jobId}/quote — generateQuote', () => {
-  it('returns 201 with generated quote and items', async () => {
+describe('POST /jobs/{jobId}/quote/generate — async API path', () => {
+  it('returns 202 and writes processing placeholder — Claude NOT called synchronously', async () => {
+    // Verifies the async dispatch pattern: API path returns immediately without calling
+    // Claude. The background Lambda (separate async invocation) handles the AI call.
     mockDynamo
-      .mockResolvedValueOnce({ Item: JOB_ITEM })    // GetItem job
-      .mockResolvedValueOnce({ Item: undefined })    // GetItem quote (not found)
-      .mockResolvedValueOnce({});                    // TransactWrite
-
-    mockAnthropic.mockResolvedValueOnce({
-      content: [{ type: 'text', text: AI_ITEMS_JSON }],
-    });
+      .mockResolvedValueOnce({ Item: JOB_ITEM })  // GetItem job
+      .mockResolvedValueOnce({ Item: undefined })  // GetItem quote (not found)
+      .mockResolvedValueOnce({});                  // PutItem processing placeholder
 
     const res = await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
 
-    expect(res.statusCode).toBe(201);
-    const body = JSON.parse(res.body);
-    expect(body.quote.totalAmount).toBe(770);
-    expect(body.quote.status).toBe('Draft');
-    expect(body.quote.model).toBe('claude-sonnet-4-6');
-    expect(body.quote.itemCount).toBe(2);
-    expect(body.items).toHaveLength(2);
-    expect(body.items[0].seq).toBe(1);
+    expect(res.statusCode).toBe(202);
+    expect(JSON.parse(res.body).status).toBe('processing');
+    // DynamoDB: 2 GetItems + 1 PutItem (placeholder) = 3 calls total
+    expect(mockDynamo).toHaveBeenCalledTimes(3);
+    expect(mockAnthropic).not.toHaveBeenCalled();
   });
 
-  it('stores quote metadata with correct fields in DynamoDB', async () => {
+  it('writes processing placeholder with correct shape', async () => {
     mockDynamo
       .mockResolvedValueOnce({ Item: JOB_ITEM })
       .mockResolvedValueOnce({ Item: undefined })
       .mockResolvedValueOnce({});
-
-    mockAnthropic.mockResolvedValueOnce({
-      content: [{ type: 'text', text: AI_ITEMS_JSON }],
-    });
 
     await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
 
-    const transactInput = mockDynamo.mock.calls[2][0].input;
-    const quotePut = transactInput.TransactItems[0].Put.Item;
-    expect(quotePut.PK).toBe(`JOB#${USER_ID}#${JOB_ID_PADDED}`);
-    expect(quotePut.SK).toBe('QUOTE');
-    expect(quotePut.entityType).toBe('Quote');
-    expect(quotePut.model).toBe('claude-sonnet-4-6');
-    expect(quotePut.inputLength).toBe(VALID_DESCRIPTION.length);
-    expect(quotePut.currency).toBe('EUR');
+    const putInput = mockDynamo.mock.calls[2][0].input;
+    expect(putInput.Item.PK).toBe(`JOB#${USER_ID}#${JOB_ID_PADDED}`);
+    expect(putInput.Item.SK).toBe('QUOTE');
+    expect(putInput.Item.entityType).toBe('Quote');
+    expect(putInput.Item.status).toBe('processing');
+    expect(putInput.Item.inputLength).toBe(VALID_DESCRIPTION.length);
+    expect(putInput.ConditionExpression).toContain('attribute_not_exists');
   });
 
-  it('stores line items with correct SK format', async () => {
+  it('returns 202 (idempotent) when quote is already processing — no second invocation', async () => {
     mockDynamo
       .mockResolvedValueOnce({ Item: JOB_ITEM })
-      .mockResolvedValueOnce({ Item: undefined })
-      .mockResolvedValueOnce({});
+      .mockResolvedValueOnce({ Item: { ...QUOTE_HEADER, status: 'processing' } });
 
-    mockAnthropic.mockResolvedValueOnce({
-      content: [{ type: 'text', text: AI_ITEMS_JSON }],
-    });
+    const res = await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
 
-    await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
-
-    const transactInput = mockDynamo.mock.calls[2][0].input;
-    const item1Put = transactInput.TransactItems[1].Put.Item;
-    expect(item1Put.SK).toBe('QUOTE#ITEM#001');
-    expect(item1Put.entityType).toBe('QuoteItem');
-    const item2Put = transactInput.TransactItems[2].Put.Item;
-    expect(item2Put.SK).toBe('QUOTE#ITEM#002');
-  });
-
-  it('calls Claude with correct model and token limits', async () => {
-    mockDynamo
-      .mockResolvedValueOnce({ Item: JOB_ITEM })
-      .mockResolvedValueOnce({ Item: undefined })
-      .mockResolvedValueOnce({});
-
-    mockAnthropic.mockResolvedValueOnce({
-      content: [{ type: 'text', text: AI_ITEMS_JSON }],
-    });
-
-    await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
-
-    const aiCall = mockAnthropic.mock.calls[0][0];
-    expect(aiCall.model).toBe('claude-sonnet-4-6');
-    expect(aiCall.max_tokens).toBe(1500);
-    expect(aiCall.system).toContain('Italian');
-    expect(aiCall.messages[0].role).toBe('user');
-    expect(aiCall.messages[0].content).toContain(VALID_DESCRIPTION);
-  });
-
-  it('includes optional notes in the AI prompt', async () => {
-    mockDynamo
-      .mockResolvedValueOnce({ Item: JOB_ITEM })
-      .mockResolvedValueOnce({ Item: undefined })
-      .mockResolvedValueOnce({});
-
-    mockAnthropic.mockResolvedValueOnce({
-      content: [{ type: 'text', text: AI_ITEMS_JSON }],
-    });
-
-    const notes = 'Usare piastrelle Marazzi';
-    await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION, notes }), ctx);
-
-    const aiCall = mockAnthropic.mock.calls[0][0];
-    expect(aiCall.messages[0].content).toContain(notes);
+    expect(res.statusCode).toBe(202);
+    // Only 2 GetItem calls — no PutItem and no Lambda invoke
+    expect(mockDynamo).toHaveBeenCalledTimes(2);
+    expect(mockAnthropic).not.toHaveBeenCalled();
   });
 
   it('returns 400 when description is too short', async () => {
@@ -255,80 +212,132 @@ describe('POST /jobs/{jobId}/quote — generateQuote', () => {
     expect(res.statusCode).toBe(404);
   });
 
-  it('returns 409 when quote already exists', async () => {
+  it('returns 409 when a non-processing quote already exists', async () => {
     mockDynamo
       .mockResolvedValueOnce({ Item: JOB_ITEM })
-      .mockResolvedValueOnce({ Item: QUOTE_HEADER });
+      .mockResolvedValueOnce({ Item: QUOTE_HEADER }); // status: 'Draft'
 
     const res = await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
     expect(res.statusCode).toBe(409);
     expect(JSON.parse(res.body).error.code).toBe('CONFLICT');
   });
 
-  it('returns 502 when Anthropic API throws', async () => {
-    mockDynamo
-      .mockResolvedValueOnce({ Item: JOB_ITEM })
-      .mockResolvedValueOnce({ Item: undefined });
-
-    mockAnthropic.mockRejectedValueOnce(new Error('Connection timeout'));
-
-    const res = await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
-    expect(res.statusCode).toBe(502);
-    expect(JSON.parse(res.body).error.code).toBe('AI_SERVICE_UNAVAILABLE');
-  });
-
-  it('returns 502 when AI returns invalid JSON', async () => {
-    mockDynamo
-      .mockResolvedValueOnce({ Item: JOB_ITEM })
-      .mockResolvedValueOnce({ Item: undefined });
-
-    mockAnthropic.mockResolvedValueOnce({
-      content: [{ type: 'text', text: 'Sorry, I cannot generate a quote.' }],
-    });
-
-    const res = await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
-    expect(res.statusCode).toBe(502);
-  });
-
-  it('parses JSON embedded in surrounding text', async () => {
-    mockDynamo
-      .mockResolvedValueOnce({ Item: JOB_ITEM })
-      .mockResolvedValueOnce({ Item: undefined })
-      .mockResolvedValueOnce({});
-
-    mockAnthropic.mockResolvedValueOnce({
-      content: [{ type: 'text', text: `Here is the quote:\n${AI_ITEMS_JSON}\nEnd of quote.` }],
-    });
-
-    const res = await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
-    expect(res.statusCode).toBe(201);
-    expect(JSON.parse(res.body).items).toHaveLength(2);
-  });
-
-  it('recalculates lineTotal server-side (ignores AI value)', async () => {
-    const itemsWithWrongTotal = JSON.stringify([
-      { seq: 1, description: 'Lavori idraulici', quantity: 2, unit: 'ore', unitPrice: 50, lineTotal: 999 },
-    ]);
-    mockDynamo
-      .mockResolvedValueOnce({ Item: JOB_ITEM })
-      .mockResolvedValueOnce({ Item: undefined })
-      .mockResolvedValueOnce({});
-
-    mockAnthropic.mockResolvedValueOnce({
-      content: [{ type: 'text', text: itemsWithWrongTotal }],
-    });
-
-    const res = await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
-    const body = JSON.parse(res.body);
-    expect(body.items[0].lineTotal).toBe(100); // 2 × 50
-    expect(body.quote.totalAmount).toBe(100);
-  });
-
-  it('returns 500 on unexpected error', async () => {
+  it('returns 500 on unexpected DynamoDB error', async () => {
     mockDynamo.mockRejectedValueOnce(new Error('DynamoDB down'));
 
     const res = await handler(makeEvent('POST', '/jobs/{jobId}/quote/generate', { description: VALID_DESCRIPTION }), ctx);
     expect(res.statusCode).toBe(500);
+  });
+});
+
+// ── Background Lambda (async-quote-generation event) ──────────────────────────
+// Invoked asynchronously by the API path. Tests verify Claude is called correctly
+// and the quote is written to DynamoDB (or marked failed on error).
+
+const makeBackgroundEvent = (description = VALID_DESCRIPTION, notes?: string) => ({
+  source: 'async-quote-generation' as const,
+  userId: USER_ID,
+  jobIdFormatted: JOB_ID_PADDED,
+  description,
+  notes,
+});
+
+describe('Background Lambda — runBackgroundGeneration', () => {
+  it('calls Claude with correct model and token limits, then writes quote via TransactWrite', async () => {
+    mockAnthropic.mockResolvedValueOnce({
+      content: [{ type: 'text', text: AI_ITEMS_JSON }],
+    });
+    mockDynamo.mockResolvedValueOnce({}); // TransactWrite
+
+    await handler(makeBackgroundEvent() as never, ctx);
+
+    const aiCall = mockAnthropic.mock.calls[0][0];
+    expect(aiCall.model).toBe('claude-sonnet-4-6');
+    expect(aiCall.max_tokens).toBe(4096); // background Lambda uses higher limit to avoid mid-JSON truncation
+    expect(aiCall.system).toContain('Italian');
+    expect(aiCall.messages[0].role).toBe('user');
+    expect(aiCall.messages[0].content).toContain(VALID_DESCRIPTION);
+
+    const transactInput = mockDynamo.mock.calls[0][0].input;
+    const update = transactInput.TransactItems[0].Update;
+    expect(update.Key.SK).toBe('QUOTE');
+    expect(update.ExpressionAttributeValues[':draft']).toBe('Draft');
+  });
+
+  it('includes optional notes in the AI prompt', async () => {
+    mockAnthropic.mockResolvedValueOnce({
+      content: [{ type: 'text', text: AI_ITEMS_JSON }],
+    });
+    mockDynamo.mockResolvedValueOnce({});
+
+    await handler(makeBackgroundEvent(VALID_DESCRIPTION, 'Usare piastrelle Marazzi') as never, ctx);
+
+    const aiCall = mockAnthropic.mock.calls[0][0];
+    expect(aiCall.messages[0].content).toContain('Usare piastrelle Marazzi');
+  });
+
+  it('stores line items with correct SK format', async () => {
+    mockAnthropic.mockResolvedValueOnce({
+      content: [{ type: 'text', text: AI_ITEMS_JSON }],
+    });
+    mockDynamo.mockResolvedValueOnce({});
+
+    await handler(makeBackgroundEvent() as never, ctx);
+
+    const transactInput = mockDynamo.mock.calls[0][0].input;
+    const item1Put = transactInput.TransactItems[1].Put.Item;
+    expect(item1Put.SK).toBe('QUOTE#ITEM#001');
+    expect(item1Put.entityType).toBe('QuoteItem');
+    const item2Put = transactInput.TransactItems[2].Put.Item;
+    expect(item2Put.SK).toBe('QUOTE#ITEM#002');
+  });
+
+  it('recalculates lineTotal server-side (ignores AI value)', async () => {
+    const wrongTotal = JSON.stringify([
+      { seq: 1, description: 'Lavori idraulici', quantity: 2, unit: 'ore', unitPrice: 50, lineTotal: 999 },
+    ]);
+    mockAnthropic.mockResolvedValueOnce({ content: [{ type: 'text', text: wrongTotal }] });
+    mockDynamo.mockResolvedValueOnce({});
+
+    await handler(makeBackgroundEvent() as never, ctx);
+
+    const transactInput = mockDynamo.mock.calls[0][0].input;
+    const item = transactInput.TransactItems[1].Put.Item;
+    expect(item.lineTotal).toBe(100); // 2 × 50, not 999
+  });
+
+  it('parses JSON embedded in surrounding text', async () => {
+    mockAnthropic.mockResolvedValueOnce({
+      content: [{ type: 'text', text: `Here is the quote:\n${AI_ITEMS_JSON}\nEnd of quote.` }],
+    });
+    mockDynamo.mockResolvedValueOnce({});
+
+    await handler(makeBackgroundEvent() as never, ctx);
+
+    const transactInput = mockDynamo.mock.calls[0][0].input;
+    expect(transactInput.TransactItems).toHaveLength(3); // 1 Update + 2 Puts
+  });
+
+  it('marks quote as failed when Anthropic API throws', async () => {
+    mockAnthropic.mockRejectedValueOnce(new Error('Connection timeout'));
+    mockDynamo.mockResolvedValueOnce({}); // UpdateCommand setting status = 'failed'
+
+    await handler(makeBackgroundEvent() as never, ctx);
+
+    const updateInput = mockDynamo.mock.calls[0][0].input;
+    expect(updateInput.ExpressionAttributeValues[':failed']).toBe('failed');
+  });
+
+  it('marks quote as failed when AI returns invalid JSON', async () => {
+    mockAnthropic.mockResolvedValueOnce({
+      content: [{ type: 'text', text: 'Sorry, I cannot help with that.' }],
+    });
+    mockDynamo.mockResolvedValueOnce({}); // UpdateCommand setting status = 'failed'
+
+    await handler(makeBackgroundEvent() as never, ctx);
+
+    const updateInput = mockDynamo.mock.calls[0][0].input;
+    expect(updateInput.ExpressionAttributeValues[':failed']).toBe('failed');
   });
 });
 
@@ -415,10 +424,17 @@ describe('PATCH /jobs/{jobId}/quote — editQuote', () => {
     expect(body.items[1].seq).toBe(2);
   });
 
-  it('deletes old items and inserts new ones in TransactWrite', async () => {
+  it('deletes old items that have no matching new SK, inserts new items in TransactWrite', async () => {
+    // Bug fix: before the fix, Delete+Put on the same SK within one TransactWrite caused
+    // a DynamoDB collision error. The fix skips Delete for any SK that a Put will also write.
+    // Old items use seq 3 and 4 (SKs 003, 004); new items use seq 1 and 2 (SKs 001, 002).
+    // No overlap → 2 deletes + 2 puts generated correctly.
+    const OLD_ITEM_3 = { ...QUOTE_ITEM_1, SK: 'QUOTE#ITEM#003', seq: 3 };
+    const OLD_ITEM_4 = { ...QUOTE_ITEM_2, SK: 'QUOTE#ITEM#004', seq: 4 };
+
     mockDynamo
       .mockResolvedValueOnce({ Item: QUOTE_HEADER })
-      .mockResolvedValueOnce({ Items: [QUOTE_ITEM_1, QUOTE_ITEM_2] })
+      .mockResolvedValueOnce({ Items: [OLD_ITEM_3, OLD_ITEM_4] })
       .mockResolvedValueOnce({});
 
     await handler(makeEvent('PATCH', '/jobs/{jobId}/quote', VALID_ITEMS_BODY), ctx);
@@ -429,7 +445,7 @@ describe('PATCH /jobs/{jobId}/quote — editQuote', () => {
     const deletes = items.filter((i: Record<string, unknown>) => 'Delete' in i);
     const puts = items.filter((i: Record<string, unknown>) => 'Put' in i);
     expect(updates).toHaveLength(1); // quote header
-    expect(deletes).toHaveLength(2); // old items
+    expect(deletes).toHaveLength(2); // old items (non-overlapping SKs)
     expect(puts).toHaveLength(2);    // new items
   });
 
@@ -647,5 +663,43 @@ describe('POST /jobs/{jobId}/quote/pdf — generateQuotePdf', () => {
     mockDynamo.mockRejectedValueOnce(new Error('DynamoDB failure'));
     const res = await handler(makeEvent('POST', '/jobs/{jobId}/quote/send'), ctx);
     expect(res.statusCode).toBe(500);
+  });
+});
+
+// ── Bug regression tests ──────────────────────────────────────────────────────
+
+describe('Regression: TransactWrite Delete+Put same-key collision in editQuote', () => {
+  it('does NOT include a Delete for a SK that a Put will also write in the same transaction', async () => {
+    // Bug: editQuote deleted ALL existing items then inserted new ones. When the new item
+    // count equalled the old count, DynamoDB rejected the transaction because you cannot
+    // Delete and Put the same SK in a single TransactWriteItems call.
+    // Fix: only Delete items whose SK is absent from the incoming Put set.
+    mockDynamo
+      .mockResolvedValueOnce({ Item: QUOTE_HEADER })
+      .mockResolvedValueOnce({ Items: [QUOTE_ITEM_1, QUOTE_ITEM_2] }) // old: seq 1, 2
+      .mockResolvedValueOnce({});
+
+    // New items also use seq 1, 2 → same SKs as old → zero deletes expected
+    await handler(makeEvent('PATCH', '/jobs/{jobId}/quote', VALID_ITEMS_BODY), ctx);
+
+    const transactInput = mockDynamo.mock.calls[2][0].input;
+    const deletes = transactInput.TransactItems.filter((i: Record<string, unknown>) => 'Delete' in i);
+    expect(deletes).toHaveLength(0);
+  });
+
+  it('only deletes items whose SK is absent from the incoming items', async () => {
+    // Old items: seq 1, 2, 3. New items: seq 1, 2. Only seq 3 should be deleted.
+    const OLD_ITEM_3 = { ...QUOTE_ITEM_1, SK: 'QUOTE#ITEM#003', seq: 3 };
+    mockDynamo
+      .mockResolvedValueOnce({ Item: QUOTE_HEADER })
+      .mockResolvedValueOnce({ Items: [QUOTE_ITEM_1, QUOTE_ITEM_2, OLD_ITEM_3] })
+      .mockResolvedValueOnce({});
+
+    await handler(makeEvent('PATCH', '/jobs/{jobId}/quote', VALID_ITEMS_BODY), ctx);
+
+    const transactInput = mockDynamo.mock.calls[2][0].input;
+    const deletes = transactInput.TransactItems.filter((i: Record<string, unknown>) => 'Delete' in i);
+    expect(deletes).toHaveLength(1);
+    expect(deletes[0].Delete.Key.SK).toBe('QUOTE#ITEM#003');
   });
 });

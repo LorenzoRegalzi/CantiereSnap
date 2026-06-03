@@ -1,0 +1,4987 @@
+{
+  "aggregate": {
+    "counters": {
+      "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 449,
+      "vusers.created": 449,
+      "http.requests": 449,
+      "vusers.skipped": 1,
+      "http.codes.404": 449,
+      "http.responses": 449,
+      "http.downloaded_bytes": 25593,
+      "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 449,
+      "errors.Failed capture or match": 449,
+      "vusers.failed": 449
+    },
+    "rates": {
+      "http.request_rate": 1
+    },
+    "firstCounterAt": 1780470818288,
+    "firstHistogramAt": 1780470819316,
+    "lastCounterAt": 1780471267372,
+    "lastHistogramAt": 1780471267372,
+    "firstMetricAt": 1780470818288,
+    "lastMetricAt": 1780471267372,
+    "period": 1780471260000,
+    "summaries": {
+      "http.response_time": {
+        "min": 36,
+        "max": 999,
+        "count": 449,
+        "mean": 67.6,
+        "p50": 71.5,
+        "median": 71.5,
+        "p75": 73,
+        "p90": 76,
+        "p95": 80.6,
+        "p99": 94.6,
+        "p999": 232.8
+      },
+      "http.response_time.4xx": {
+        "min": 36,
+        "max": 999,
+        "count": 449,
+        "mean": 67.6,
+        "p50": 71.5,
+        "median": 71.5,
+        "p75": 73,
+        "p90": 76,
+        "p95": 80.6,
+        "p99": 94.6,
+        "p999": 232.8
+      },
+      "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+        "min": 36,
+        "max": 999,
+        "count": 449,
+        "mean": 67.6,
+        "p50": 71.5,
+        "median": 71.5,
+        "p75": 73,
+        "p90": 76,
+        "p95": 80.6,
+        "p99": 94.6,
+        "p999": 232.8
+      }
+    },
+    "histograms": {
+      "http.response_time": {
+        "min": 36,
+        "max": 999,
+        "count": 449,
+        "mean": 67.6,
+        "p50": 71.5,
+        "median": 71.5,
+        "p75": 73,
+        "p90": 76,
+        "p95": 80.6,
+        "p99": 94.6,
+        "p999": 232.8
+      },
+      "http.response_time.4xx": {
+        "min": 36,
+        "max": 999,
+        "count": 449,
+        "mean": 67.6,
+        "p50": 71.5,
+        "median": 71.5,
+        "p75": 73,
+        "p90": 76,
+        "p95": 80.6,
+        "p99": 94.6,
+        "p999": 232.8
+      },
+      "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+        "min": 36,
+        "max": 999,
+        "count": 449,
+        "mean": 67.6,
+        "p50": 71.5,
+        "median": 71.5,
+        "p75": 73,
+        "p90": 76,
+        "p95": 80.6,
+        "p99": 94.6,
+        "p999": 232.8
+      }
+    }
+  },
+  "intermediate": [
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 1,
+        "vusers.created": 1,
+        "http.requests": 1,
+        "vusers.skipped": 1,
+        "http.codes.404": 1,
+        "http.responses": 1,
+        "http.downloaded_bytes": 57,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 1,
+        "errors.Failed capture or match": 1,
+        "vusers.failed": 1
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470818288,
+      "firstHistogramAt": 1780470819316,
+      "lastCounterAt": 1780470819319,
+      "lastHistogramAt": 1780470819318,
+      "firstMetricAt": 1780470818288,
+      "lastMetricAt": 1780470819319,
+      "period": "1780470810000",
+      "summaries": {
+        "http.response_time": {
+          "min": 999,
+          "max": 999,
+          "count": 1,
+          "mean": 999,
+          "p50": 1002.4,
+          "median": 1002.4,
+          "p75": 1002.4,
+          "p90": 1002.4,
+          "p95": 1002.4,
+          "p99": 1002.4,
+          "p999": 1002.4
+        },
+        "http.response_time.4xx": {
+          "min": 999,
+          "max": 999,
+          "count": 1,
+          "mean": 999,
+          "p50": 1002.4,
+          "median": 1002.4,
+          "p75": 1002.4,
+          "p90": 1002.4,
+          "p95": 1002.4,
+          "p99": 1002.4,
+          "p999": 1002.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 999,
+          "max": 999,
+          "count": 1,
+          "mean": 999,
+          "p50": 1002.4,
+          "median": 1002.4,
+          "p75": 1002.4,
+          "p90": 1002.4,
+          "p95": 1002.4,
+          "p99": 1002.4,
+          "p999": 1002.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 999,
+          "max": 999,
+          "count": 1,
+          "mean": 999,
+          "p50": 1002.4,
+          "median": 1002.4,
+          "p75": 1002.4,
+          "p90": 1002.4,
+          "p95": 1002.4,
+          "p99": 1002.4,
+          "p999": 1002.4
+        },
+        "http.response_time.4xx": {
+          "min": 999,
+          "max": 999,
+          "count": 1,
+          "mean": 999,
+          "p50": 1002.4,
+          "median": 1002.4,
+          "p75": 1002.4,
+          "p90": 1002.4,
+          "p95": 1002.4,
+          "p99": 1002.4,
+          "p999": 1002.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 999,
+          "max": 999,
+          "count": 1,
+          "mean": 999,
+          "p50": 1002.4,
+          "median": 1002.4,
+          "p75": 1002.4,
+          "p90": 1002.4,
+          "p95": 1002.4,
+          "p99": 1002.4,
+          "p999": 1002.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470820287,
+      "firstHistogramAt": 1780470820377,
+      "lastCounterAt": 1780470829336,
+      "lastHistogramAt": 1780470829336,
+      "firstMetricAt": 1780470820287,
+      "lastMetricAt": 1780470829336,
+      "period": "1780470820000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 234,
+          "count": 10,
+          "mean": 81.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 80.6,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 234,
+          "count": 10,
+          "mean": 81.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 80.6,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 234,
+          "count": 10,
+          "mean": 81.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 80.6,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 234,
+          "count": 10,
+          "mean": 81.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 80.6,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 234,
+          "count": 10,
+          "mean": 81.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 80.6,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 234,
+          "count": 10,
+          "mean": 81.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 80.6,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470830287,
+      "firstHistogramAt": 1780470830432,
+      "lastCounterAt": 1780470839341,
+      "lastHistogramAt": 1780470839340,
+      "firstMetricAt": 1780470830287,
+      "lastMetricAt": 1780470839341,
+      "period": "1780470830000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 136,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 57.4,
+          "median": 57.4,
+          "p75": 71.5,
+          "p90": 106.7,
+          "p95": 106.7,
+          "p99": 106.7,
+          "p999": 106.7
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 136,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 57.4,
+          "median": 57.4,
+          "p75": 71.5,
+          "p90": 106.7,
+          "p95": 106.7,
+          "p99": 106.7,
+          "p999": 106.7
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 136,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 57.4,
+          "median": 57.4,
+          "p75": 71.5,
+          "p90": 106.7,
+          "p95": 106.7,
+          "p99": 106.7,
+          "p999": 106.7
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 136,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 57.4,
+          "median": 57.4,
+          "p75": 71.5,
+          "p90": 106.7,
+          "p95": 106.7,
+          "p99": 106.7,
+          "p999": 106.7
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 136,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 57.4,
+          "median": 57.4,
+          "p75": 71.5,
+          "p90": 106.7,
+          "p95": 106.7,
+          "p99": 106.7,
+          "p999": 106.7
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 136,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 57.4,
+          "median": 57.4,
+          "p75": 71.5,
+          "p90": 106.7,
+          "p95": 106.7,
+          "p99": 106.7,
+          "p999": 106.7
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470840287,
+      "firstHistogramAt": 1780470840387,
+      "lastCounterAt": 1780470849369,
+      "lastHistogramAt": 1780470849368,
+      "firstMetricAt": 1780470840287,
+      "lastMetricAt": 1780470849369,
+      "period": "1780470840000",
+      "summaries": {
+        "http.response_time": {
+          "min": 41,
+          "max": 89,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 41,
+          "max": 89,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 41,
+          "max": 89,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 41,
+          "max": 89,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 41,
+          "max": 89,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 41,
+          "max": 89,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470850287,
+      "firstHistogramAt": 1780470850336,
+      "lastCounterAt": 1780470859363,
+      "lastHistogramAt": 1780470859363,
+      "firstMetricAt": 1780470850287,
+      "lastMetricAt": 1780470859363,
+      "period": "1780470850000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 68.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 68.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 68.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 68.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 68.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 68.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470860287,
+      "firstHistogramAt": 1780470860364,
+      "lastCounterAt": 1780470869373,
+      "lastHistogramAt": 1780470869372,
+      "firstMetricAt": 1780470860287,
+      "lastMetricAt": 1780470869373,
+      "period": "1780470860000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 58.5,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 58.5,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 58.5,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 58.5,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 58.5,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 58.5,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470870287,
+      "firstHistogramAt": 1780470870337,
+      "lastCounterAt": 1780470879388,
+      "lastHistogramAt": 1780470879388,
+      "firstMetricAt": 1780470870287,
+      "lastMetricAt": 1780470879388,
+      "period": "1780470870000",
+      "summaries": {
+        "http.response_time": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470880287,
+      "firstHistogramAt": 1780470880394,
+      "lastCounterAt": 1780470889369,
+      "lastHistogramAt": 1780470889369,
+      "firstMetricAt": 1780470880287,
+      "lastMetricAt": 1780470889369,
+      "period": "1780470880000",
+      "summaries": {
+        "http.response_time": {
+          "min": 40,
+          "max": 83,
+          "count": 10,
+          "mean": 61,
+          "p50": 56.3,
+          "median": 56.3,
+          "p75": 74.4,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 83,
+          "count": 10,
+          "mean": 61,
+          "p50": 56.3,
+          "median": 56.3,
+          "p75": 74.4,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 83,
+          "count": 10,
+          "mean": 61,
+          "p50": 56.3,
+          "median": 56.3,
+          "p75": 74.4,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 40,
+          "max": 83,
+          "count": 10,
+          "mean": 61,
+          "p50": 56.3,
+          "median": 56.3,
+          "p75": 74.4,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 83,
+          "count": 10,
+          "mean": 61,
+          "p50": 56.3,
+          "median": 56.3,
+          "p75": 74.4,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 83,
+          "count": 10,
+          "mean": 61,
+          "p50": 56.3,
+          "median": 56.3,
+          "p75": 74.4,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470890287,
+      "firstHistogramAt": 1780470890352,
+      "lastCounterAt": 1780470899342,
+      "lastHistogramAt": 1780470899342,
+      "firstMetricAt": 1780470890287,
+      "lastMetricAt": 1780470899342,
+      "period": "1780470890000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 59.2,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 73,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 59.2,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 73,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 59.2,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 73,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 59.2,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 73,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 59.2,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 73,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 59.2,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 73,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470900287,
+      "firstHistogramAt": 1780470900389,
+      "lastCounterAt": 1780470909383,
+      "lastHistogramAt": 1780470909383,
+      "firstMetricAt": 1780470900287,
+      "lastMetricAt": 1780470909383,
+      "period": "1780470900000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470910287,
+      "firstHistogramAt": 1780470910366,
+      "lastCounterAt": 1780470919333,
+      "lastHistogramAt": 1780470919333,
+      "firstMetricAt": 1780470910287,
+      "lastMetricAt": 1780470919333,
+      "period": "1780470910000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 82,
+          "count": 10,
+          "mean": 63.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 82,
+          "count": 10,
+          "mean": 63.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 82,
+          "count": 10,
+          "mean": 63.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 82,
+          "count": 10,
+          "mean": 63.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 82,
+          "count": 10,
+          "mean": 63.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 82,
+          "count": 10,
+          "mean": 63.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470920287,
+      "firstHistogramAt": 1780470920376,
+      "lastCounterAt": 1780470929369,
+      "lastHistogramAt": 1780470929369,
+      "firstMetricAt": 1780470920287,
+      "lastMetricAt": 1780470929369,
+      "period": "1780470920000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 90,
+          "count": 10,
+          "mean": 70.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 79.1,
+          "p95": 79.1,
+          "p99": 79.1,
+          "p999": 79.1
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 90,
+          "count": 10,
+          "mean": 70.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 79.1,
+          "p95": 79.1,
+          "p99": 79.1,
+          "p999": 79.1
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 90,
+          "count": 10,
+          "mean": 70.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 79.1,
+          "p95": 79.1,
+          "p99": 79.1,
+          "p999": 79.1
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 90,
+          "count": 10,
+          "mean": 70.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 79.1,
+          "p95": 79.1,
+          "p99": 79.1,
+          "p999": 79.1
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 90,
+          "count": 10,
+          "mean": 70.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 79.1,
+          "p95": 79.1,
+          "p99": 79.1,
+          "p999": 79.1
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 90,
+          "count": 10,
+          "mean": 70.8,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 79.1,
+          "p95": 79.1,
+          "p99": 79.1,
+          "p999": 79.1
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470930287,
+      "firstHistogramAt": 1780470930368,
+      "lastCounterAt": 1780470939369,
+      "lastHistogramAt": 1780470939369,
+      "firstMetricAt": 1780470930287,
+      "lastMetricAt": 1780470939369,
+      "period": "1780470930000",
+      "summaries": {
+        "http.response_time": {
+          "min": 42,
+          "max": 76,
+          "count": 10,
+          "mean": 68.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 42,
+          "max": 76,
+          "count": 10,
+          "mean": 68.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 42,
+          "max": 76,
+          "count": 10,
+          "mean": 68.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 42,
+          "max": 76,
+          "count": 10,
+          "mean": 68.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 42,
+          "max": 76,
+          "count": 10,
+          "mean": 68.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 42,
+          "max": 76,
+          "count": 10,
+          "mean": 68.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470940287,
+      "firstHistogramAt": 1780470940336,
+      "lastCounterAt": 1780470949369,
+      "lastHistogramAt": 1780470949369,
+      "firstMetricAt": 1780470940287,
+      "lastMetricAt": 1780470949369,
+      "period": "1780470940000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 92,
+          "count": 10,
+          "mean": 66.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 92,
+          "count": 10,
+          "mean": 66.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 92,
+          "count": 10,
+          "mean": 66.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 92,
+          "count": 10,
+          "mean": 66.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 92,
+          "count": 10,
+          "mean": 66.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 92,
+          "count": 10,
+          "mean": 66.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470950287,
+      "firstHistogramAt": 1780470950332,
+      "lastCounterAt": 1780470959369,
+      "lastHistogramAt": 1780470959369,
+      "firstMetricAt": 1780470950287,
+      "lastMetricAt": 1780470959369,
+      "period": "1780470950000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 75,
+          "count": 10,
+          "mean": 65.1,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470960287,
+      "firstHistogramAt": 1780470960333,
+      "lastCounterAt": 1780470969368,
+      "lastHistogramAt": 1780470969368,
+      "firstMetricAt": 1780470960287,
+      "lastMetricAt": 1780470969368,
+      "period": "1780470960000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 74,
+          "count": 10,
+          "mean": 67.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 74,
+          "count": 10,
+          "mean": 67.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 74,
+          "count": 10,
+          "mean": 67.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 74,
+          "count": 10,
+          "mean": 67.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 74,
+          "count": 10,
+          "mean": 67.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 74,
+          "count": 10,
+          "mean": 67.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470970287,
+      "firstHistogramAt": 1780470970384,
+      "lastCounterAt": 1780470979349,
+      "lastHistogramAt": 1780470979349,
+      "firstMetricAt": 1780470970287,
+      "lastMetricAt": 1780470979349,
+      "period": "1780470970000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 83,
+          "count": 10,
+          "mean": 63.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 83,
+          "count": 10,
+          "mean": 63.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 83,
+          "count": 10,
+          "mean": 63.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 83,
+          "count": 10,
+          "mean": 63.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 83,
+          "count": 10,
+          "mean": 63.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 83,
+          "count": 10,
+          "mean": 63.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470980287,
+      "firstHistogramAt": 1780470980352,
+      "lastCounterAt": 1780470989387,
+      "lastHistogramAt": 1780470989387,
+      "firstMetricAt": 1780470980287,
+      "lastMetricAt": 1780470989387,
+      "period": "1780470980000",
+      "summaries": {
+        "http.response_time": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 62.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 62.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 62.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 62.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 62.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 75,
+          "count": 10,
+          "mean": 62.6,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780470990287,
+      "firstHistogramAt": 1780470990378,
+      "lastCounterAt": 1780470999377,
+      "lastHistogramAt": 1780470999376,
+      "firstMetricAt": 1780470990287,
+      "lastMetricAt": 1780470999377,
+      "period": "1780470990000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 77,
+          "count": 10,
+          "mean": 67.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471000287,
+      "firstHistogramAt": 1780471000349,
+      "lastCounterAt": 1780471009369,
+      "lastHistogramAt": 1780471009369,
+      "firstMetricAt": 1780471000287,
+      "lastMetricAt": 1780471009369,
+      "period": "1780471000000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 95,
+          "count": 10,
+          "mean": 68.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 95,
+          "count": 10,
+          "mean": 68.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 95,
+          "count": 10,
+          "mean": 68.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 95,
+          "count": 10,
+          "mean": 68.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 95,
+          "count": 10,
+          "mean": 68.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 95,
+          "count": 10,
+          "mean": 68.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 80.6,
+          "p95": 80.6,
+          "p99": 80.6,
+          "p999": 80.6
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471010287,
+      "firstHistogramAt": 1780471010366,
+      "lastCounterAt": 1780471019368,
+      "lastHistogramAt": 1780471019368,
+      "firstMetricAt": 1780471010287,
+      "lastMetricAt": 1780471019368,
+      "period": "1780471010000",
+      "summaries": {
+        "http.response_time": {
+          "min": 68,
+          "max": 87,
+          "count": 10,
+          "mean": 72.4,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 68,
+          "max": 87,
+          "count": 10,
+          "mean": 72.4,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 68,
+          "max": 87,
+          "count": 10,
+          "mean": 72.4,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 68,
+          "max": 87,
+          "count": 10,
+          "mean": 72.4,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 68,
+          "max": 87,
+          "count": 10,
+          "mean": 72.4,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 68,
+          "max": 87,
+          "count": 10,
+          "mean": 72.4,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471020287,
+      "firstHistogramAt": 1780471020369,
+      "lastCounterAt": 1780471029370,
+      "lastHistogramAt": 1780471029370,
+      "firstMetricAt": 1780471020287,
+      "lastMetricAt": 1780471029370,
+      "period": "1780471020000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 62.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 62.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 62.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 62.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 62.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 62.3,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471030287,
+      "firstHistogramAt": 1780471030369,
+      "lastCounterAt": 1780471039387,
+      "lastHistogramAt": 1780471039387,
+      "firstMetricAt": 1780471030287,
+      "lastMetricAt": 1780471039387,
+      "period": "1780471030000",
+      "summaries": {
+        "http.response_time": {
+          "min": 39,
+          "max": 74,
+          "count": 10,
+          "mean": 64.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 39,
+          "max": 74,
+          "count": 10,
+          "mean": 64.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 39,
+          "max": 74,
+          "count": 10,
+          "mean": 64.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 39,
+          "max": 74,
+          "count": 10,
+          "mean": 64.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 39,
+          "max": 74,
+          "count": 10,
+          "mean": 64.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 39,
+          "max": 74,
+          "count": 10,
+          "mean": 64.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471040287,
+      "firstHistogramAt": 1780471040392,
+      "lastCounterAt": 1780471049345,
+      "lastHistogramAt": 1780471049345,
+      "firstMetricAt": 1780471040287,
+      "lastMetricAt": 1780471049345,
+      "period": "1780471040000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 69.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 69.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 69.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 69.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 69.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 69.2,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 82.3,
+          "p95": 82.3,
+          "p99": 82.3,
+          "p999": 82.3
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471050287,
+      "firstHistogramAt": 1780471050366,
+      "lastCounterAt": 1780471059390,
+      "lastHistogramAt": 1780471059389,
+      "firstMetricAt": 1780471050287,
+      "lastMetricAt": 1780471059390,
+      "period": "1780471050000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 165,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 165,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 165,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 165,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 165,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 165,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471060287,
+      "firstHistogramAt": 1780471060395,
+      "lastCounterAt": 1780471069382,
+      "lastHistogramAt": 1780471069382,
+      "firstMetricAt": 1780471060287,
+      "lastMetricAt": 1780471069382,
+      "period": "1780471060000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 73,
+          "count": 10,
+          "mean": 59.8,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 68.7,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 73,
+          "count": 10,
+          "mean": 59.8,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 68.7,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 73,
+          "count": 10,
+          "mean": 59.8,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 68.7,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 73,
+          "count": 10,
+          "mean": 59.8,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 68.7,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 73,
+          "count": 10,
+          "mean": 59.8,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 68.7,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 73,
+          "count": 10,
+          "mean": 59.8,
+          "p50": 58.6,
+          "median": 58.6,
+          "p75": 68.7,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471070287,
+      "firstHistogramAt": 1780471070378,
+      "lastCounterAt": 1780471079369,
+      "lastHistogramAt": 1780471079369,
+      "firstMetricAt": 1780471070287,
+      "lastMetricAt": 1780471079369,
+      "period": "1780471070000",
+      "summaries": {
+        "http.response_time": {
+          "min": 66,
+          "max": 77,
+          "count": 10,
+          "mean": 71.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 66,
+          "max": 77,
+          "count": 10,
+          "mean": 71.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 66,
+          "max": 77,
+          "count": 10,
+          "mean": 71.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 66,
+          "max": 77,
+          "count": 10,
+          "mean": 71.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 66,
+          "max": 77,
+          "count": 10,
+          "mean": 71.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 66,
+          "max": 77,
+          "count": 10,
+          "mean": 71.9,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471080287,
+      "firstHistogramAt": 1780471080365,
+      "lastCounterAt": 1780471089367,
+      "lastHistogramAt": 1780471089367,
+      "firstMetricAt": 1780471080287,
+      "lastMetricAt": 1780471089367,
+      "period": "1780471080000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 64.6,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 64.6,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 64.6,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 64.6,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 64.6,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 75,
+          "count": 10,
+          "mean": 64.6,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471090287,
+      "firstHistogramAt": 1780471090366,
+      "lastCounterAt": 1780471099372,
+      "lastHistogramAt": 1780471099372,
+      "firstMetricAt": 1780471090287,
+      "lastMetricAt": 1780471099372,
+      "period": "1780471090000",
+      "summaries": {
+        "http.response_time": {
+          "min": 39,
+          "max": 88,
+          "count": 10,
+          "mean": 69.9,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "http.response_time.4xx": {
+          "min": 39,
+          "max": 88,
+          "count": 10,
+          "mean": 69.9,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 39,
+          "max": 88,
+          "count": 10,
+          "mean": 69.9,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 39,
+          "max": 88,
+          "count": 10,
+          "mean": 69.9,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "http.response_time.4xx": {
+          "min": 39,
+          "max": 88,
+          "count": 10,
+          "mean": 69.9,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 39,
+          "max": 88,
+          "count": 10,
+          "mean": 69.9,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471100287,
+      "firstHistogramAt": 1780471100369,
+      "lastCounterAt": 1780471109333,
+      "lastHistogramAt": 1780471109333,
+      "firstMetricAt": 1780471100287,
+      "lastMetricAt": 1780471109333,
+      "period": "1780471100000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 76,
+          "count": 10,
+          "mean": 61.5,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 76,
+          "count": 10,
+          "mean": 61.5,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 76,
+          "count": 10,
+          "mean": 61.5,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 76,
+          "count": 10,
+          "mean": 61.5,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 76,
+          "count": 10,
+          "mean": 61.5,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 76,
+          "count": 10,
+          "mean": 61.5,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471110287,
+      "firstHistogramAt": 1780471110368,
+      "lastCounterAt": 1780471119349,
+      "lastHistogramAt": 1780471119349,
+      "firstMetricAt": 1780471110287,
+      "lastMetricAt": 1780471119349,
+      "period": "1780471110000",
+      "summaries": {
+        "http.response_time": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 65.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 65.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 65.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 65.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 65.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 65.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471120287,
+      "firstHistogramAt": 1780471120351,
+      "lastCounterAt": 1780471129366,
+      "lastHistogramAt": 1780471129366,
+      "firstMetricAt": 1780471120287,
+      "lastMetricAt": 1780471129366,
+      "period": "1780471120000",
+      "summaries": {
+        "http.response_time": {
+          "min": 39,
+          "max": 78,
+          "count": 10,
+          "mean": 61.4,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "http.response_time.4xx": {
+          "min": 39,
+          "max": 78,
+          "count": 10,
+          "mean": 61.4,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 39,
+          "max": 78,
+          "count": 10,
+          "mean": 61.4,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 39,
+          "max": 78,
+          "count": 10,
+          "mean": 61.4,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "http.response_time.4xx": {
+          "min": 39,
+          "max": 78,
+          "count": 10,
+          "mean": 61.4,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 39,
+          "max": 78,
+          "count": 10,
+          "mean": 61.4,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471130287,
+      "firstHistogramAt": 1780471130336,
+      "lastCounterAt": 1780471139335,
+      "lastHistogramAt": 1780471139334,
+      "firstMetricAt": 1780471130287,
+      "lastMetricAt": 1780471139335,
+      "period": "1780471130000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 83,
+          "count": 10,
+          "mean": 65.7,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 73,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471140287,
+      "firstHistogramAt": 1780471140368,
+      "lastCounterAt": 1780471149370,
+      "lastHistogramAt": 1780471149370,
+      "firstMetricAt": 1780471140287,
+      "lastMetricAt": 1780471149370,
+      "period": "1780471140000",
+      "summaries": {
+        "http.response_time": {
+          "min": 43,
+          "max": 77,
+          "count": 10,
+          "mean": 69.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 43,
+          "max": 77,
+          "count": 10,
+          "mean": 69.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 43,
+          "max": 77,
+          "count": 10,
+          "mean": 69.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 43,
+          "max": 77,
+          "count": 10,
+          "mean": 69.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 43,
+          "max": 77,
+          "count": 10,
+          "mean": 69.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 43,
+          "max": 77,
+          "count": 10,
+          "mean": 69.7,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471150287,
+      "firstHistogramAt": 1780471150374,
+      "lastCounterAt": 1780471159337,
+      "lastHistogramAt": 1780471159336,
+      "firstMetricAt": 1780471150287,
+      "lastMetricAt": 1780471159337,
+      "period": "1780471150000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 57.9,
+          "p50": 66,
+          "median": 66,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 57.9,
+          "p50": 66,
+          "median": 66,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 57.9,
+          "p50": 66,
+          "median": 66,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 57.9,
+          "p50": 66,
+          "median": 66,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 57.9,
+          "p50": 66,
+          "median": 66,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 57.9,
+          "p50": 66,
+          "median": 66,
+          "p75": 70.1,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471160287,
+      "firstHistogramAt": 1780471160372,
+      "lastCounterAt": 1780471169366,
+      "lastHistogramAt": 1780471169366,
+      "firstMetricAt": 1780471160287,
+      "lastMetricAt": 1780471169366,
+      "period": "1780471160000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 76,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471170287,
+      "firstHistogramAt": 1780471170372,
+      "lastCounterAt": 1780471179370,
+      "lastHistogramAt": 1780471179370,
+      "firstMetricAt": 1780471170287,
+      "lastMetricAt": 1780471179370,
+      "period": "1780471170000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 70.1,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 70.1,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 70.1,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 70.1,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 70.1,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 77,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 70.1,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471180287,
+      "firstHistogramAt": 1780471180338,
+      "lastCounterAt": 1780471189370,
+      "lastHistogramAt": 1780471189370,
+      "firstMetricAt": 1780471180287,
+      "lastMetricAt": 1780471189370,
+      "period": "1780471180000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 59.1,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 59.1,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 59.1,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 59.1,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 59.1,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 59.1,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471190287,
+      "firstHistogramAt": 1780471190366,
+      "lastCounterAt": 1780471199367,
+      "lastHistogramAt": 1780471199367,
+      "firstMetricAt": 1780471190287,
+      "lastMetricAt": 1780471199367,
+      "period": "1780471190000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 80,
+          "count": 10,
+          "mean": 66,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 80,
+          "count": 10,
+          "mean": 66,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 80,
+          "count": 10,
+          "mean": 66,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 80,
+          "count": 10,
+          "mean": 66,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 80,
+          "count": 10,
+          "mean": 66,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 80,
+          "count": 10,
+          "mean": 66,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471200287,
+      "firstHistogramAt": 1780471200371,
+      "lastCounterAt": 1780471209370,
+      "lastHistogramAt": 1780471209370,
+      "firstMetricAt": 1780471200287,
+      "lastMetricAt": 1780471209370,
+      "period": "1780471200000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 61.7,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 61.7,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 61.7,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 61.7,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 61.7,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 75,
+          "count": 10,
+          "mean": 61.7,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471210287,
+      "firstHistogramAt": 1780471210365,
+      "lastCounterAt": 1780471219379,
+      "lastHistogramAt": 1780471219379,
+      "firstMetricAt": 1780471210287,
+      "lastMetricAt": 1780471219379,
+      "period": "1780471210000",
+      "summaries": {
+        "http.response_time": {
+          "min": 45,
+          "max": 83,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 45,
+          "max": 83,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 45,
+          "max": 83,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 45,
+          "max": 83,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 45,
+          "max": 83,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 45,
+          "max": 83,
+          "count": 10,
+          "mean": 69.4,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471220287,
+      "firstHistogramAt": 1780471220369,
+      "lastCounterAt": 1780471229367,
+      "lastHistogramAt": 1780471229367,
+      "firstMetricAt": 1780471220287,
+      "lastMetricAt": 1780471229367,
+      "period": "1780471220000",
+      "summaries": {
+        "http.response_time": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "http.response_time.4xx": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 38,
+          "max": 73,
+          "count": 10,
+          "mean": 64.5,
+          "p50": 68.7,
+          "median": 68.7,
+          "p75": 71.5,
+          "p90": 71.5,
+          "p95": 71.5,
+          "p99": 71.5,
+          "p999": 71.5
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471230287,
+      "firstHistogramAt": 1780471230331,
+      "lastCounterAt": 1780471239388,
+      "lastHistogramAt": 1780471239388,
+      "firstMetricAt": 1780471230287,
+      "lastMetricAt": 1780471239388,
+      "period": "1780471230000",
+      "summaries": {
+        "http.response_time": {
+          "min": 36,
+          "max": 90,
+          "count": 10,
+          "mean": 56.3,
+          "p50": 40,
+          "median": 40,
+          "p75": 70.1,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 90,
+          "count": 10,
+          "mean": 56.3,
+          "p50": 40,
+          "median": 40,
+          "p75": 70.1,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 90,
+          "count": 10,
+          "mean": 56.3,
+          "p50": 40,
+          "median": 40,
+          "p75": 70.1,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 36,
+          "max": 90,
+          "count": 10,
+          "mean": 56.3,
+          "p50": 40,
+          "median": 40,
+          "p75": 70.1,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "http.response_time.4xx": {
+          "min": 36,
+          "max": 90,
+          "count": 10,
+          "mean": 56.3,
+          "p50": 40,
+          "median": 40,
+          "p75": 70.1,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 36,
+          "max": 90,
+          "count": 10,
+          "mean": 56.3,
+          "p50": 40,
+          "median": 40,
+          "p75": 70.1,
+          "p90": 73,
+          "p95": 73,
+          "p99": 73,
+          "p999": 73
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471240287,
+      "firstHistogramAt": 1780471240364,
+      "lastCounterAt": 1780471249369,
+      "lastHistogramAt": 1780471249369,
+      "firstMetricAt": 1780471240287,
+      "lastMetricAt": 1780471249369,
+      "period": "1780471240000",
+      "summaries": {
+        "http.response_time": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 74,
+          "count": 10,
+          "mean": 67.8,
+          "p50": 70.1,
+          "median": 70.1,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "http.requests": 10,
+        "http.codes.404": 10,
+        "http.responses": 10,
+        "http.downloaded_bytes": 570,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 10,
+        "errors.Failed capture or match": 10,
+        "vusers.failed": 10
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471250287,
+      "firstHistogramAt": 1780471250369,
+      "lastCounterAt": 1780471259365,
+      "lastHistogramAt": 1780471259365,
+      "firstMetricAt": 1780471250287,
+      "lastMetricAt": 1780471259365,
+      "period": "1780471250000",
+      "summaries": {
+        "http.response_time": {
+          "min": 37,
+          "max": 78,
+          "count": 10,
+          "mean": 58.8,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 78,
+          "count": 10,
+          "mean": 58.8,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 78,
+          "count": 10,
+          "mean": 58.8,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 37,
+          "max": 78,
+          "count": 10,
+          "mean": 58.8,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "http.response_time.4xx": {
+          "min": 37,
+          "max": 78,
+          "count": 10,
+          "mean": 58.8,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 37,
+          "max": 78,
+          "count": 10,
+          "mean": 58.8,
+          "p50": 67.4,
+          "median": 67.4,
+          "p75": 71.5,
+          "p90": 74.4,
+          "p95": 74.4,
+          "p99": 74.4,
+          "p999": 74.4
+        }
+      }
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 8,
+        "vusers.created": 8,
+        "http.requests": 8,
+        "http.codes.404": 8,
+        "http.responses": 8,
+        "http.downloaded_bytes": 456,
+        "plugins.metrics-by-endpoint./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate).codes.404": 8,
+        "errors.Failed capture or match": 8,
+        "vusers.failed": 8
+      },
+      "rates": {
+        "http.request_rate": 1
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1780471260287,
+      "firstHistogramAt": 1780471260369,
+      "lastCounterAt": 1780471267372,
+      "lastHistogramAt": 1780471267372,
+      "firstMetricAt": 1780471260287,
+      "lastMetricAt": 1780471267372,
+      "period": "1780471260000",
+      "summaries": {
+        "http.response_time": {
+          "min": 40,
+          "max": 84,
+          "count": 8,
+          "mean": 70,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 84,
+          "count": 8,
+          "mean": 70,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 84,
+          "count": 8,
+          "mean": 70,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 40,
+          "max": 84,
+          "count": 8,
+          "mean": 70,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "http.response_time.4xx": {
+          "min": 40,
+          "max": 84,
+          "count": 8,
+          "mean": 70,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        },
+        "plugins.metrics-by-endpoint.response_time./staging/jobs/{{ benchmarkJobId }}/quote/generate (POST quote/generate)": {
+          "min": 40,
+          "max": 84,
+          "count": 8,
+          "mean": 70,
+          "p50": 71.5,
+          "median": 71.5,
+          "p75": 74.4,
+          "p90": 76,
+          "p95": 76,
+          "p99": 76,
+          "p999": 76
+        }
+      }
+    }
+  ]
+}

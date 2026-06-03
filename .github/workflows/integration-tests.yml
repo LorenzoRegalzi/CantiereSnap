@@ -1,0 +1,48 @@
+name: Integration Tests
+
+on:
+  workflow_dispatch:     # Manual trigger from GitHub Actions UI
+  schedule:
+    - cron: '0 6 * * 1' # Weekly — every Monday at 06:00 UTC
+
+jobs:
+  integration:
+    name: Newman — Staging API
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run integration tests
+        env:
+          TEST_PASSWORD: ${{ secrets.INTEGRATION_TEST_PASSWORD }}
+        run: |
+          cd tests/postman
+          newman run CantiereSnap_Integration.postman_collection.json \
+            --environment staging.postman_environment.json \
+            --env-var "testPassword=${TEST_PASSWORD}" \
+            --timeout-request 60000 \
+            --delay-request 500 \
+            --reporters cli,htmlextra,json \
+            --reporter-htmlextra-export results.html \
+            --reporter-json-export results.json
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newman-report-${{ github.run_number }}
+          path: |
+            tests/postman/results.html
+            tests/postman/results.json
+          retention-days: 30

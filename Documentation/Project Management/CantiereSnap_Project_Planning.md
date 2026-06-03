@@ -18,10 +18,12 @@
 | Phase | Period | Status |
 |---|---|---|
 | Documentation | April 2026 | ✅ Complete (6/6 cards done) |
-| Backend Development | May 2026 | ✅ Complete (9/9 cards done) |
-| Frontend Development | June 2026 | 🔲 Not started |
-| Testing & Thesis Writing | July 2026 | 🔲 Not started |
+| Backend Development | May 2026 | ✅ Complete (9/9 cards done, 357 tests) |
+| Frontend Development | May–June 2026 | ✅ Complete (7/7 cards done, 22 bugs fixed) |
+| Testing & Thesis Writing | June–July 2026 | 🔄 In Progress (3/7 cards done) |
 | Review & Submission | August 2026 (buffer) | 🔲 Not started |
+
+> **Note (3 Jun 2026):** Both backend and frontend phases completed ahead of schedule (both done by end of May). Testing phase started early — benchmark card completed June 3, unit tests 95% complete from backend phase.
 
 **Deadline:** End of July 2026 (August is buffer for Prof. Vij review and final submission via university portal).
 
@@ -445,32 +447,23 @@
 
 ---
 
-### Update to Timeline Overview
-
-| Phase | Period | Status |
-|---|---|---|
-| Documentation | April 2026 | ✅ Complete (6/6 cards done) |
-| Backend Development | May 2026 | ✅ Complete (9/9 cards done) |
-| Frontend Development | June 2026 | ✅ Complete (7/7 cards done) |
-| Testing & Thesis Writing | July 2026 | 🔲 Next |
-| Review & Submission | August 2026 (buffer) | 🔲 Not started |
 ---
 
-### 🧪 Testing & Thesis — July
+### 🧪 Testing & Thesis — June–July
 
-| Card | Due | Label |
-|---|---|---|
-| Unit Tests – Lambda Functions | 4 Jul | Testing |
-| Integration Tests – REST API | 8 Jul | Testing |
-| User Validation – 5–10 Local Tradespeople | 12 Jul | Testing |
-| Performance Benchmark – Lambda vs Fargate | 15 Jul | Testing |
-| Thesis – Chapters 1 & 2 (Intro + Requirements) | 18 Jul | Thesis Writing |
-| Thesis – Chapters 3 & 4 (Architecture + Tech Stack) | 22 Jul | Thesis Writing |
-| Thesis – Chapters 5–7 + Appendices | 26 Jul | Thesis Writing |
+| Card | Due | Status | Label |
+|---|---|---|---|
+| Unit Tests – Lambda Functions | 4 Jul | ✅ Complete (377 tests, all passing) | Testing |
+| Integration Tests – REST API | 8 Jul | ✅ Complete (3 Jun 2026) | Testing |
+| User Validation – 5–10 Local Tradespeople | 12 Jul | 🔲 Not started | Testing |
+| Performance Benchmark – Lambda vs Fargate | 15 Jul | ✅ Complete (3 Jun 2026) | Testing |
+| Thesis – Chapters 1 & 2 (Intro + Requirements) | 18 Jul | 🔲 Not started | Thesis Writing |
+| Thesis – Chapters 3 & 4 (Architecture + Tech Stack) | 22 Jul | 🔲 Not started | Thesis Writing |
+| Thesis – Chapters 5–7 + Appendices | 26 Jul | 🔲 Not started | Thesis Writing |
 
 **Card details:**
 
-**Unit Tests – Lambda Functions** – 4 Jul
+**Unit Tests – Lambda Functions** – 4 Jul ✅ Completed (ahead of schedule)
 - Jest setup
 - Tests for quote generation handler
 - Tests for invoice handler
@@ -478,14 +471,24 @@
 - Tests for OCR handler
 - Coverage report (target >80%)
 
-> ⚠️ Note: 307+ unit tests already written during May backend phase. This card may be partially complete — run coverage report and add any missing edge cases.
+> ✅ Completed – 11 May 2026 (during backend phase)
+> 📊 377 tests across 13 suites, all passing. Coverage: 93.75% statements, 94.76% lines. Auth 52, Jobs 49, Clients 31, Quotes 44, Photos 37, OCR 40, Invoices 31, Dashboard 23, Notifications 17, NotificationSender 12, MonthlyAnalytics 11, Logger 5, EmailTemplates 25.
+> 📂 GitHub: `/backend/handlers/*.test.ts`, `__fixtures__/` directories
 
-**Integration Tests – REST API** – 8 Jul
+**Integration Tests – REST API** – 8 Jul ✅ Completed (3 Jun 2026 — ahead of schedule)
 - Postman collection for all endpoints
 - Auth flow tests
 - Job lifecycle tests (create → invoice)
 - Error handling tests
 - Newman CI pipeline integration
+
+> ✅ Completed – 3 Jun 2026
+> 📂 GitHub: `/tests/postman/` (Postman collection + Newman runner + GitHub Actions workflow)
+> 📊 43 requests, 126 assertions, 0 failures. Full job lifecycle tested end-to-end on staging in 1m 10s.
+> 📊 AI quote generation tested with async 202 + polling pattern (refactored during integration testing to overcome API Gateway 29s hard timeout)
+> 📊 9 test folders: Auth Flow, Clients, Job Lifecycle, AI Quote Generation, Status Transitions, Invoice, Dashboard, Error Handling, Cleanup
+> 📊 Newman CI workflow configured in GitHub Actions (manual trigger + weekly Monday schedule)
+> 🐛 Fixed during integration testing: async quote generation (Lambda self-invocation), max_tokens 1500→4096 (truncated JSON), quote finalize auto-advances job status
 
 **User Validation – 5–10 Local Tradespeople** – 12 Jul
 - Recruit 5–10 Italian micro-enterprise tradespeople
@@ -494,12 +497,29 @@
 - Collect feedback on quote generation accuracy
 - Document findings
 
-**Performance Benchmark – Lambda vs Fargate** – 15 Jul
+**Performance Benchmark – Lambda vs Fargate** – 15 Jul ✅ Completed (3 Jun 2026 — ahead of schedule)
 - Deploy equivalent workload on Fargate
 - Measure cold-start latency (Lambda)
+- Measure warm latency under sustained and spike load
+- Measure AI quote generation time-to-data
 - Measure cost per 1000 requests
 - Measure developer experience (subjective)
 - Tabulate and chart results for thesis
+
+> ✅ Completed – 3 Jun 2026
+> 📂 GitHub: `/tests/benchmark/` (Artillery configs, run script, cost calculator, results)
+> 📊 Results file: `tests/benchmark/results/RESULTS_TEMPLATE.md`
+>
+> **Key results (RQ3):**
+> - Warm latency: Fargate 5–6× faster (median 32 ms vs 153 ms overall)
+> - Cold start: Lambda p99 = 2,322 ms; Fargate = none
+> - Spike (50 rps): Lambda 8.8% errors, Fargate 0%
+> - AI generation time-to-data: Lambda 61.7 s (async+poll), Fargate 24.6 s (sync)
+> - Cost at 10,000 req/day: Lambda $0.42/month vs Fargate $18.02/month
+> - Break-even: ~430,000 req/day (far beyond CantiereSnap target scale)
+> - **Recommendation:** Lambda is correct for CantiereSnap (<10,000 req/day); Fargate justified only for AI-heavy sync workloads or >430K req/day
+>
+> **Infrastructure note:** Fargate benchmark stack deployed via CDK (`CantiereSnap-BenchmarkStack`), destroyed after test to avoid ongoing cost. Docker image built from same Lambda handler code with Express adapter (`tests/benchmark/fargate-app/`). Benchmark ran against shared staging DynamoDB table + S3 bucket.
 
 **Thesis – Chapters 1 & 2** – 18 Jul
 - Ch.1 Introduction: problem statement, research questions, scope

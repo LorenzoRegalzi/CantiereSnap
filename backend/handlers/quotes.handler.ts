@@ -1,6 +1,7 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { createLogger, type Logger } from '../shared/logger';
-import { GetCommand, QueryCommand, UpdateCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, PutCommand, QueryCommand, UpdateCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import PDFDocument from 'pdfkit';
 import { docClient } from '../shared/dynamodb';
 import { putObject, getPresignedUrl } from '../shared/s3';
@@ -14,6 +15,18 @@ import {
   badGateway,
   internalError,
 } from '../shared/response';
+
+// ── Async background invocation type ─────────────────────────────────────────
+
+interface AsyncGenerateEvent {
+  source: 'async-quote-generation';
+  userId: string;
+  jobIdFormatted: string;
+  description: string;
+  notes?: string;
+}
+
+const lambdaClient = new LambdaClient({});
 
 const TABLE = process.env.TABLE_NAME!;
 const BUCKET = process.env.BUCKET_NAME!;
@@ -202,56 +215,139 @@ async function generateQuote(
   ]);
 
   if (!jobResult.Item) return notFound('Job not found.');
+
+  // Idempotent: if already processing, return 202 without a new invocation
+  if (quoteCheck.Item?.status === 'processing') {
+    return { statusCode: 202, headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ status: 'processing' }) };
+  }
+
   if (quoteCheck.Item) return conflict('A quote already exists for this job. Use PATCH to edit items.');
 
-  const userMessage = buildUserMessage(description, body.notes);
+  const now = new Date().toISOString();
+
+  // Write processing placeholder immediately so the client can start polling
+  await docClient.send(
+    new PutCommand({
+      TableName: TABLE,
+      Item: {
+        PK: `JOB#${userId}#${jobIdFormatted}`,
+        SK: 'QUOTE',
+        entityType: 'Quote',
+        status: 'processing',
+        inputText: description,
+        inputLength: description.length,
+        createdAt: now,
+        updatedAt: now,
+      },
+      ConditionExpression: 'attribute_not_exists(PK)',
+    }),
+  );
+
+  // Fire async self-invocation; returns immediately (InvocationType: 'Event')
+  await lambdaClient.send(
+    new InvokeCommand({
+      FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
+      InvocationType: 'Event',
+      Payload: Buffer.from(JSON.stringify({
+        source: 'async-quote-generation',
+        userId,
+        jobIdFormatted,
+        description,
+        notes: body.notes,
+      } satisfies AsyncGenerateEvent)),
+    }),
+  );
+
+  log.info('Quote generation dispatched async', { jobIdFormatted });
+  return { statusCode: 202, headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ status: 'processing' }) };
+}
+
+// ── Background generation helpers ─────────────────────────────────────────────
+
+async function markQuoteFailed(pk: string): Promise<void> {
+  await docClient.send(new UpdateCommand({
+    TableName: TABLE,
+    Key: { PK: pk, SK: 'QUOTE' },
+    UpdateExpression: 'SET #s = :failed, updatedAt = :now',
+    ExpressionAttributeNames: { '#s': 'status' },
+    ExpressionAttributeValues: { ':failed': 'failed', ':now': new Date().toISOString() },
+  }));
+}
+
+async function runBackgroundGeneration(event: AsyncGenerateEvent, context: Context): Promise<void> {
+  const log = createLogger('quotes-bg', context.awsRequestId, event.userId);
+  const { userId, jobIdFormatted, description, notes } = event;
+  const pk = `JOB#${userId}#${jobIdFormatted}`;
   const start = Date.now();
 
-  let rawItems: RawItem[];
+  // max_tokens: 1500 was the sync-path limit (API Gateway 29s). Background Lambda
+  // has no time constraint — use 4096 so a full 15-item response (~1800 tokens) is
+  // never truncated mid-JSON (truncation → SyntaxError in parseAiItems → 'failed').
+  const BG_MAX_TOKENS = 4096;
+
+  let text: string;
   try {
     const message = await anthropicClient.messages.create({
       model: QUOTE_MODEL,
-      max_tokens: 1500,
+      max_tokens: BG_MAX_TOKENS,
       system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: userMessage }],
+      messages: [{ role: 'user', content: buildUserMessage(description, notes) }],
     });
-    const text = (message.content[0] as { type: string; text: string }).text;
-    log.info('Claude raw response', { preview: text.slice(0, 500) });
-    rawItems = parseAiItems(text);
+    text = (message.content[0] as { type: string; text: string }).text;
+    log.info('Claude raw response', { preview: text.slice(0, 500), length: text.length });
   } catch (err) {
-    log.error('Anthropic API error', err);
-    return badGateway('AI quote generation is unavailable. Please try again or enter items manually.');
+    const msg = err instanceof Error ? err.message : String(err);
+    log.error('Anthropic API error — marking quote failed', { error: msg });
+    await markQuoteFailed(pk);
+    return;
   }
 
-  const generationTimeMs = Date.now() - start;
+  let rawItems: RawItem[];
+  try {
+    rawItems = parseAiItems(text);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    log.error('JSON parse failed — marking quote failed', { error: msg, preview: text.slice(0, 300) });
+    await markQuoteFailed(pk);
+    return;
+  }
 
-  if (!Array.isArray(rawItems) || rawItems.length === 0)
-    return badGateway('AI returned an empty or invalid response. Please try again.');
+  if (!Array.isArray(rawItems) || rawItems.length === 0) {
+    log.error('AI returned empty items — marking quote failed');
+    await markQuoteFailed(pk);
+    return;
+  }
 
   const items = toLineItems(rawItems).slice(0, MAX_ITEMS);
   const totalAmount = Math.round(items.reduce((sum, i) => sum + i.lineTotal, 0) * 100) / 100;
+  const generationTimeMs = Date.now() - start;
   const now = new Date().toISOString();
 
   await docClient.send(
     new TransactWriteCommand({
       TransactItems: [
         {
-          Put: {
+          Update: {
             TableName: TABLE,
-            Item: {
-              PK: `JOB#${userId}#${jobIdFormatted}`,
-              SK: 'QUOTE',
-              entityType: 'Quote',
-              totalAmount,
-              currency: 'EUR',
-              status: 'Draft',
-              inputText: description,
-              inputLength: description.length,
-              generationTimeMs,
-              itemCount: items.length,
-              model: QUOTE_MODEL,
-              createdAt: now,
-              updatedAt: now,
+            Key: { PK: pk, SK: 'QUOTE' },
+            UpdateExpression: [
+              'SET #s = :draft',
+              'totalAmount = :total',
+              'currency = :eur',
+              'generationTimeMs = :ms',
+              'itemCount = :count',
+              '#m = :model',
+              'updatedAt = :now',
+            ].join(', '),
+            ExpressionAttributeNames: { '#s': 'status', '#m': 'model' },
+            ExpressionAttributeValues: {
+              ':draft': 'Draft',
+              ':total': totalAmount,
+              ':eur': 'EUR',
+              ':ms': generationTimeMs,
+              ':count': items.length,
+              ':model': QUOTE_MODEL,
+              ':now': now,
             },
           },
         },
@@ -259,7 +355,7 @@ async function generateQuote(
           Put: {
             TableName: TABLE,
             Item: {
-              PK: `JOB#${userId}#${jobIdFormatted}`,
+              PK: pk,
               SK: `QUOTE#ITEM#${padSeq(item.seq)}`,
               entityType: 'QuoteItem',
               seq: item.seq,
@@ -275,19 +371,7 @@ async function generateQuote(
     }),
   );
 
-  return created({
-    quote: {
-      totalAmount,
-      currency: 'EUR',
-      status: 'Draft',
-      generationTimeMs,
-      inputLength: description.length,
-      itemCount: items.length,
-      model: QUOTE_MODEL,
-      createdAt: now,
-    },
-    items,
-  });
+  log.info('Quote generation complete', { totalAmount, itemCount: items.length, generationTimeMs });
 }
 
 async function getQuote(userId: string, jobIdRaw: string): Promise<APIGatewayProxyResult> {
@@ -580,25 +664,36 @@ async function generateQuotePdf(userId: string, jobIdRaw: string): Promise<APIGa
 
 // ── Entry point ───────────────────────────────────────────────────────────────
 
-export const handler = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
-  const log = createLogger('quotes', context.awsRequestId, getUserId(event));
-  const userId = getUserId(event);
-  const { httpMethod: method, resource } = event;
-  const jobId = event.pathParameters?.jobId ?? '';
+export const handler = async (
+  event: APIGatewayProxyEvent | AsyncGenerateEvent,
+  context: Context,
+): Promise<APIGatewayProxyResult> => {
+  // Background invocation from generateQuote — not an API Gateway event.
+  // Return value is ignored by Lambda async invocation callers.
+  if ((event as AsyncGenerateEvent).source === 'async-quote-generation') {
+    await runBackgroundGeneration(event as AsyncGenerateEvent, context);
+    return { statusCode: 200, headers: { 'Access-Control-Allow-Origin': '*' }, body: '' };
+  }
+
+  const apiEvent = event as APIGatewayProxyEvent;
+  const log = createLogger('quotes', context.awsRequestId, getUserId(apiEvent));
+  const userId = getUserId(apiEvent);
+  const { httpMethod: method, resource } = apiEvent;
+  const jobId = apiEvent.pathParameters?.jobId ?? '';
 
   try {
     if (resource === '/jobs/{jobId}/quote') {
       if (method === 'GET') return await getQuote(userId, jobId);
-      if (method === 'PATCH') return await editQuote(event, userId, jobId);
+      if (method === 'PATCH') return await editQuote(apiEvent, userId, jobId);
     }
     if (resource === '/jobs/{jobId}/quote/generate' && method === 'POST')
-      return await generateQuote(event, userId, jobId, log);
+      return await generateQuote(apiEvent, userId, jobId, log);
     if (resource === '/jobs/{jobId}/quote/items') {
-      if (method === 'POST') return await editQuote(event, userId, jobId);
+      if (method === 'POST') return await editQuote(apiEvent, userId, jobId);
     }
     if (resource === '/jobs/{jobId}/quote/items/{seq}') {
-      if (method === 'PUT') return await editQuote(event, userId, jobId);
-      if (method === 'DELETE') return await editQuote(event, userId, jobId);
+      if (method === 'PUT') return await editQuote(apiEvent, userId, jobId);
+      if (method === 'DELETE') return await editQuote(apiEvent, userId, jobId);
     }
     if (resource === '/jobs/{jobId}/quote/finalize' && method === 'POST')
       return await approveQuote(userId, jobId);

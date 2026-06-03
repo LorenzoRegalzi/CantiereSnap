@@ -42,16 +42,64 @@ export default function QuoteGenerator({ jobId, jobDescription, onGenerated }: Q
     };
   }, [generating]);
 
+  async function pollUntilReady(signal: AbortSignal): Promise<void> {
+    const POLL_INTERVAL_MS = 5000;
+    const MAX_ATTEMPTS = 12; // 60 seconds
+
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      if (signal.aborted) return;
+
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+      if (signal.aborted) return;
+
+      try {
+        const { data } = await apiClient.get<{ quote: Quote; items: QuoteItem[] }>(
+          `/jobs/${jobId}/quote`
+        );
+        if (data.quote.status === 'processing') continue;
+        if (data.quote.status === 'failed') {
+          setAlert({
+            variant: 'error',
+            message: 'La generazione AI non è riuscita. Puoi inserire le voci manualmente.',
+          });
+          onGenerated({ status: 'Draft', totalAmount: 0, itemCount: 0 }, []);
+          return;
+        }
+        // status === 'Draft' — ready
+        onGenerated(data.quote, data.items);
+        return;
+      } catch {
+        // Transient poll error — keep trying
+      }
+    }
+
+    // Timed out after MAX_ATTEMPTS
+    setAlert({
+      variant: 'error',
+      message: 'Il preventivo è ancora in elaborazione. Ricarica la pagina tra qualche secondo.',
+    });
+  }
+
   async function handleGenerate() {
     setGenerating(true);
     setAlert(null);
+    const abortController = new AbortController();
 
     try {
-      const { data } = await apiClient.post<QuoteGenerateResponse>(
+      const response = await apiClient.post<{ status: string } | QuoteGenerateResponse>(
         `/jobs/${jobId}/quote/generate`,
         { description: jobDescription, notes: notes.trim() || undefined }
       );
-      onGenerated(data.quote, data.items);
+
+      // 202 Accepted — generation dispatched async, start polling
+      if ((response.data as { status: string }).status === 'processing') {
+        await pollUntilReady(abortController.signal);
+        return;
+      }
+
+      // Legacy 201 sync path (never reached on current backend, kept for safety)
+      const syncData = response.data as QuoteGenerateResponse;
+      onGenerated(syncData.quote, syncData.items);
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
         // Quote already exists — load and show it
@@ -59,7 +107,11 @@ export default function QuoteGenerator({ jobId, jobDescription, onGenerated }: Q
           const { data } = await apiClient.get<{ quote: Quote; items: QuoteItem[] }>(
             `/jobs/${jobId}/quote`
           );
-          onGenerated(data.quote, data.items);
+          if (data.quote.status === 'processing') {
+            await pollUntilReady(abortController.signal);
+          } else {
+            onGenerated(data.quote, data.items);
+          }
           return;
         } catch {
           setAlert({ variant: 'error', message: 'Errore durante il caricamento del preventivo esistente.' });
@@ -69,12 +121,12 @@ export default function QuoteGenerator({ jobId, jobDescription, onGenerated }: Q
           variant: 'error',
           message: 'Il servizio AI non è momentaneamente disponibile. Puoi inserire le voci manualmente.',
         });
-        // Show editor with empty items so user can add manually
         onGenerated({ status: 'Draft', totalAmount: 0, itemCount: 0 }, []);
       } else {
         setAlert({ variant: 'error', message: 'Errore durante la generazione del preventivo.' });
       }
     } finally {
+      abortController.abort();
       setGenerating(false);
     }
   }

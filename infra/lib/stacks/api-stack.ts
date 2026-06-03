@@ -99,6 +99,16 @@ export class ApiStack extends cdk.Stack {
     props.bucket.grantRead(jobsFn);   // presigned GET URLs for photos in job details
     props.table.grantReadWriteData(clientsFn);
     props.table.grantReadWriteData(quotesFn);
+    // Allow quotesFn to invoke itself asynchronously for AI quote generation.
+    // We CANNOT use quotesFn.functionArn here — CDK adds an implicit DependsOn
+    // from every Lambda to its own default role policy, so referencing the function
+    // ARN inside that same policy creates a circular CloudFormation dependency.
+    // Using pseudo-parameters (AWS::Region, AWS::AccountId, AWS::StackName) produces
+    // a string-literal ARN in CloudFormation that has no resource dependency.
+    quotesFn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['lambda:InvokeFunction'],
+      resources: [`arn:aws:lambda:${this.region}:${this.account}:function:${this.stackName}-QuotesFn*`],
+    }));
     props.table.grantReadWriteData(photosFn);
     props.table.grantReadWriteData(ocrFn);
     props.table.grantReadWriteData(invoicesFn);
@@ -166,6 +176,8 @@ export class ApiStack extends cdk.Stack {
 
     const jobRes = jobsRes.addResource('{jobId}');
     jobRes.addMethod('GET', int(jobsFn), auth);
+    jobRes.addMethod('PATCH', int(jobsFn), auth);
+    jobRes.addMethod('DELETE', int(jobsFn), auth);
     jobRes.addResource('details').addMethod('GET', int(jobsFn), auth);
     jobRes.addResource('status').addMethod('PATCH', int(jobsFn), auth);
 

@@ -480,3 +480,37 @@ describe('DELETE /jobs/{jobId}/photos/{photoId} — deletePhoto', () => {
     expect(res.statusCode).toBe(500);
   });
 });
+
+// ── Bug regression tests ──────────────────────────────────────────────────────
+
+describe('Regression: presigned URL must include x-amz-meta-tag header', () => {
+  it('returns x-amz-meta-tag in the headers object so the client includes it in the S3 PUT', async () => {
+    // Bug: the upload-url response omitted x-amz-meta-tag from the headers map.
+    // The client sent the header to S3 without it being signed into the presigned URL,
+    // causing S3 to reject the PUT with a SignatureDoesNotMatch error.
+    // Fix: include x-amz-meta-tag: <tag> in the response headers so the client sends it
+    // and S3 validates against the signed header value.
+    mockPutPresignedUrl.mockResolvedValue(UPLOAD_URL);
+
+    const res = await handler(
+      makeEvent('POST', '/jobs/{jobId}/photos/upload-url', VALID_UPLOAD_BODY), ctx);
+
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body);
+    expect(body.headers['x-amz-meta-tag']).toBe('Before');
+  });
+
+  it('reflects the correct tag value for After photos', async () => {
+    mockPutPresignedUrl.mockResolvedValue(UPLOAD_URL);
+
+    const res = await handler(
+      makeEvent('POST', '/jobs/{jobId}/photos/upload-url', {
+        fileName: 'bagno_dopo.jpg',
+        mimeType: 'image/jpeg',
+        tag: 'After',
+      }), ctx);
+
+    expect(res.statusCode).toBe(200);
+    expect(JSON.parse(res.body).headers['x-amz-meta-tag']).toBe('After');
+  });
+});

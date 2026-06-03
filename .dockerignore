@@ -1,0 +1,39 @@
+# Exclude everything that the Fargate benchmark Dockerfile doesn't need.
+# This file is used by CDK ContainerImage.fromAsset() (ignoreMode: DOCKER)
+# to limit what gets staged into cdk.out/ before the Docker build.
+
+# Build artifacts & caches
+cdk.out/
+**/.next/
+**/dist/
+**/build/
+**/coverage/
+**/__pycache__/
+
+# Dependencies (reinstalled inside the image)
+**/node_modules/
+
+# Source trees not needed for the Fargate build
+frontend/
+infra/
+Documentation/
+tests/benchmark/results/
+tests/postman/
+.github/
+
+# Git & editor metadata
+.git/
+.gitignore
+.gitattributes
+**/.DS_Store
+
+# Test artefacts
+**/__tests__/
+**/__fixtures__/
+**/*.test.ts
+**/*.spec.ts
+
+# Misc
+*.md
+*.log
+.env*

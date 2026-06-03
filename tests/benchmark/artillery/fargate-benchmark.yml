@@ -1,0 +1,41 @@
+config:
+  # Replace with the ALB URL from: cdk deploy CantiereSnap-BenchmarkStack --context env=benchmark
+  # Output: CantiereSnap-BenchmarkStack.FargateUrl
+  target: "http://REPLACE_WITH_ALB_URL"
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm-up"
+    - duration: 120
+      arrivalRate: 10
+      name: "Sustained load"
+    - duration: 30
+      arrivalRate: 50
+      name: "Spike"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      Authorization: "Bearer {{ accessToken }}"
+  plugins:
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+
+scenarios:
+  - name: "GET /jobs — CRUD read"
+    weight: 6
+    flow:
+      - get:
+          url: "/jobs"
+          name: "GET /jobs"
+
+  - name: "POST /jobs — CRUD write"
+    weight: 4
+    flow:
+      - post:
+          url: "/jobs"
+          name: "POST /jobs"
+          json:
+            clientId: "{{ clientId }}"
+            description: "Benchmark test job — rifacimento bagno completo con sostituzione sanitari, piastrelle e impianto idraulico"
+            address: "Via Benchmark 1, Carmagnola (TO)"
+            targetDate: "2026-12-31"

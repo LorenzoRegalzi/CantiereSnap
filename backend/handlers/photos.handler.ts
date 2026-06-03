@@ -106,6 +106,7 @@ async function generateUploadUrl(
     method: 'PUT',
     headers: {
       'Content-Type': body.mimeType,
+      'x-amz-meta-tag': body.tag,
     },
   });
 }

@@ -1,0 +1,35 @@
+{
+  "name": "cantieresnap-fargate-benchmark",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Thin Express wrapper around CantiereSnap Lambda handlers for Fargate benchmark comparison",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "start": "node dist/server.js",
+    "dev": "ts-node server.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.95.1",
+    "@aws-sdk/client-cognito-identity-provider": "^3.600.0",
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/client-lambda": "^3.1057.0",
+    "@aws-sdk/client-s3": "^3.1043.0",
+    "@aws-sdk/client-ses": "^3.1044.0",
+    "@aws-sdk/client-sns": "^3.1044.0",
+    "@aws-sdk/client-textract": "^3.1044.0",
+    "@aws-sdk/lib-dynamodb": "^3.600.0",
+    "@aws-sdk/s3-request-presigner": "^3.1043.0",
+    "express": "^4.19.2",
+    "pdfkit": "^0.18.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.140",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

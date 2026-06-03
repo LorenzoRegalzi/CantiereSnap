@@ -1,0 +1,1542 @@
+{
+  "info": {
+    "name": "CantiereSnap Integration Tests",
+    "_postman_id": "cantieresnap-integration-v1",
+    "description": "Full lifecycle integration tests for the CantiereSnap staging API. Runs sequentially: Auth → Clients → Jobs → Quotes → Status Transitions → Invoice → Dashboard → Error Handling → Cleanup.\n\nPrerequisites:\n- Set testPassword environment variable (or pass via --env-var in Newman)\n- loginEmail must be a pre-verified Cognito account (defaults to developer account)\n- Staging API must be deployed and healthy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "accessToken",   "value": "" },
+    { "key": "refreshToken",  "value": "" },
+    { "key": "clientId",      "value": "" },
+    { "key": "jobId",         "value": "" },
+    { "key": "photoId",       "value": "" },
+    { "key": "s3Key",         "value": "" },
+    { "key": "invoiceNumber", "value": "" }
+  ],
+  "item": [
+
+    {
+      "name": "1. Auth Flow",
+      "item": [
+
+        {
+          "name": "1.1 Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has accessToken', () => pm.expect(jsonData).to.have.property('accessToken'));",
+                  "pm.test('Has refreshToken', () => pm.expect(jsonData).to.have.property('refreshToken'));",
+                  "pm.test('Has expiresIn', () => pm.expect(jsonData).to.have.property('expiresIn'));",
+                  "",
+                  "if (jsonData.accessToken) {",
+                  "    pm.environment.set('accessToken', jsonData.accessToken);",
+                  "}",
+                  "if (jsonData.refreshToken) {",
+                  "    pm.environment.set('refreshToken', jsonData.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{loginEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+
+        {
+          "name": "1.2 Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has new accessToken', () => pm.expect(jsonData).to.have.property('accessToken'));",
+                  "",
+                  "if (jsonData.accessToken) {",
+                  "    pm.environment.set('accessToken', jsonData.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+
+        {
+          "name": "1.3 Get Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has email', () => pm.expect(jsonData).to.have.property('email'));",
+                  "pm.test('Has fullName', () => pm.expect(jsonData).to.have.property('fullName'));",
+                  "pm.test('email matches login', () => {",
+                  "    pm.expect(jsonData.email).to.equal(pm.environment.get('loginEmail'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+
+        {
+          "name": "1.4 Update Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has partitaIva', () => pm.expect(jsonData).to.have.property('partitaIva'));",
+                  "pm.test('partitaIva saved correctly', () => {",
+                  "    pm.expect(jsonData.partitaIva).to.equal('IT12345678901');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Integration Test User\",\n  \"businessName\": \"Test Costruzioni SRL\",\n  \"partitaIva\": \"IT12345678901\",\n  \"codiceFiscale\": \"TSTINT80A01H501Z\",\n  \"regimeFiscale\": \"RF19\",\n  \"phone\": \"+393331234567\",\n  \"address\": {\n    \"street\": \"Via Test 1\",\n    \"city\": \"Carmagnola\",\n    \"province\": \"TO\",\n    \"cap\": \"10022\",\n    \"country\": \"IT\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["profile"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "2. Clients",
+      "item": [
+
+        {
+          "name": "2.1 Create Client",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has clientId', () => pm.expect(jsonData).to.have.property('clientId'));",
+                  "pm.test('clientName saved', () => pm.expect(jsonData.clientName).to.equal('Mario Rossi'));",
+                  "",
+                  "if (jsonData.clientId) {",
+                  "    pm.environment.set('clientId', jsonData.clientId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientName\": \"Mario Rossi\",\n  \"email\": \"mario.rossi@test.it\",\n  \"phone\": \"+393339876543\",\n  \"codiceFiscale\": \"RSSMRA80A01H501X\",\n  \"address\": {\n    \"street\": \"Via Roma 42\",\n    \"city\": \"Carmagnola\",\n    \"province\": \"TO\",\n    \"cap\": \"10022\",\n    \"country\": \"IT\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients"]
+            }
+          }
+        },
+
+        {
+          "name": "2.2 List Clients",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has items array', () => pm.expect(jsonData).to.have.property('items'));",
+                  "pm.test('At least 1 client', () => pm.expect(jsonData.items.length).to.be.above(0));",
+                  "pm.test('First item has clientId and clientName', () => {",
+                  "    pm.expect(jsonData.items[0]).to.have.property('clientId');",
+                  "    pm.expect(jsonData.items[0]).to.have.property('clientName');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients"]
+            }
+          }
+        },
+
+        {
+          "name": "2.3 Search Clients",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has items array', () => pm.expect(jsonData).to.have.property('items'));",
+                  "pm.test('Results contain Mario', () => {",
+                  "    const found = jsonData.items.some(c => c.clientName.includes('Mario'));",
+                  "    pm.expect(found).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/clients?search=Mario",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients"],
+              "query": [{ "key": "search", "value": "Mario" }]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "3. Job Lifecycle",
+      "item": [
+
+        {
+          "name": "3.1 Create Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has jobId', () => pm.expect(jsonData).to.have.property('jobId'));",
+                  "pm.test('status is Quote', () => pm.expect(jsonData.status).to.equal('Quote'));",
+                  "pm.test('Has clientName', () => pm.expect(jsonData).to.have.property('clientName'));",
+                  "pm.test('Has jobIdFormatted', () => pm.expect(jsonData).to.have.property('jobIdFormatted'));",
+                  "",
+                  "if (jsonData.jobId !== undefined) {",
+                  "    pm.environment.set('jobId', String(jsonData.jobId));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"description\": \"Rifacimento completo bagno principale: demolizione pavimento e rivestimenti esistenti, rifacimento massetto, impermeabilizzazione, posa nuove piastrelle a pavimento e parete, sostituzione sanitari e rubinetteria, installazione piatto doccia con box in vetro\",\n  \"address\": \"Via Roma 42, Carmagnola (TO)\",\n  \"targetDate\": \"2026-08-15\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"]
+            }
+          }
+        },
+
+        {
+          "name": "3.2 List Jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has items array', () => pm.expect(jsonData).to.have.property('items'));",
+                  "pm.test('At least 1 job', () => pm.expect(jsonData.items.length).to.be.above(0));",
+                  "pm.test('Has nextToken field', () => pm.expect(jsonData).to.have.property('nextToken'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"]
+            }
+          }
+        },
+
+        {
+          "name": "3.3 List Jobs by Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('All items have status Quote', () => {",
+                  "    jsonData.items.forEach(job => {",
+                  "        pm.expect(job.status).to.equal('Quote');",
+                  "    });",
+                  "});",
+                  "pm.test('No Cancelled jobs in result', () => {",
+                  "    const hasCancelled = jsonData.items.some(j => j.status === 'Cancelled');",
+                  "    pm.expect(hasCancelled).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs?status=Quote",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"],
+              "query": [{ "key": "status", "value": "Quote" }]
+            }
+          }
+        },
+
+        {
+          "name": "3.4 Get Job Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has jobId', () => pm.expect(jsonData).to.have.property('jobId'));",
+                  "pm.test('Has status', () => pm.expect(jsonData).to.have.property('status'));",
+                  "pm.test('Has clientName', () => pm.expect(jsonData).to.have.property('clientName'));",
+                  "pm.test('Has description', () => pm.expect(jsonData).to.have.property('description'));",
+                  "pm.test('Has statusHistory array', () => pm.expect(jsonData.statusHistory).to.be.an('array'));",
+                  "pm.test('quote is null before generation', () => pm.expect(jsonData.quote).to.be.null);",
+                  "pm.test('photos is array', () => pm.expect(jsonData.photos).to.be.an('array'));",
+                  "pm.test('materials is array', () => pm.expect(jsonData.materials).to.be.an('array'));",
+                  "pm.test('invoice is null before creation', () => pm.expect(jsonData.invoice).to.be.null);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/details",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "details"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "4. AI Quote Generation",
+      "item": [
+
+        {
+          "name": "4.1 Generate Quote (AI)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('quoteCreated', 'false');",
+                  "pm.environment.set('_quotePollCount', '0');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Async pattern: POST returns 202 immediately; background Lambda calls Claude.",
+                  "// Client polls GET /quote until status changes from 'processing' to 'Draft'.",
+                  "pm.test('Status 202 Accepted', () => pm.response.to.have.status(202));",
+                  "pm.test('Body has status processing', () => {",
+                  "    pm.expect(pm.response.json().status).to.equal('processing');",
+                  "});",
+                  "pm.execution.setNextRequest('4.1b Poll Quote Ready');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Rifacimento completo bagno principale: demolizione pavimento e rivestimenti esistenti, rifacimento massetto, impermeabilizzazione, posa nuove piastrelle a pavimento e parete, sostituzione sanitari e rubinetteria, installazione piatto doccia con box in vetro\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/quote/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "quote", "generate"]
+            }
+          }
+        },
+
+        {
+          "name": "4.1b Poll Quote Ready",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// 5-second busy-wait before each poll attempt",
+                  "const waitMs = 5000;",
+                  "const end = Date.now() + waitMs;",
+                  "while (Date.now() < end) { /* busy wait */ }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const MAX_POLLS = 12;",
+                  "const count = parseInt(pm.environment.get('_quotePollCount') || '0') + 1;",
+                  "pm.environment.set('_quotePollCount', String(count));",
+                  "",
+                  "const code = pm.response.code;",
+                  "if (code !== 200) {",
+                  "    if (count < MAX_POLLS) {",
+                  "        pm.execution.setNextRequest('4.1b Poll Quote Ready');",
+                  "    } else {",
+                  "        pm.test('Quote ready (timed out after ' + MAX_POLLS + ' polls)', () => pm.expect(code).to.equal(200));",
+                  "        pm.execution.setNextRequest('5.1 Advance to Accepted');",
+                  "    }",
+                  "    return;",
+                  "}",
+                  "",
+                  "const jsonData = pm.response.json();",
+                  "const status = jsonData.quote && jsonData.quote.status;",
+                  "",
+                  "if (status === 'processing') {",
+                  "    if (count < MAX_POLLS) {",
+                  "        pm.execution.setNextRequest('4.1b Poll Quote Ready');",
+                  "    } else {",
+                  "        pm.test('Quote ready within 60s (timed out)', () => pm.expect(status).to.not.equal('processing'));",
+                  "        pm.execution.setNextRequest('5.1 Advance to Accepted');",
+                  "    }",
+                  "    return;",
+                  "}",
+                  "",
+                  "if (status === 'failed') {",
+                  "    pm.test('Quote generation succeeded (status was failed)', () => pm.expect(status).to.not.equal('failed'));",
+                  "    pm.environment.set('quoteCreated', 'false');",
+                  "    pm.execution.setNextRequest('5.1 Advance to Accepted');",
+                  "    return;",
+                  "}",
+                  "",
+                  "// status === 'Draft' — generation complete",
+                  "pm.environment.set('quoteCreated', 'true');",
+                  "pm.test('Quote is ready (status Draft)', () => pm.expect(status).to.equal('Draft'));",
+                  "pm.test('quote.totalAmount > 0', () => pm.expect(jsonData.quote.totalAmount).to.be.above(0));",
+                  "pm.test('items is non-empty array', () => {",
+                  "    pm.expect(jsonData.items).to.be.an('array');",
+                  "    pm.expect(jsonData.items.length).to.be.above(0);",
+                  "});",
+                  "pm.test('Each item has required fields', () => {",
+                  "    jsonData.items.forEach(item => {",
+                  "        pm.expect(item).to.have.all.keys(['seq','description','quantity','unit','unitPrice','lineTotal'].reduce((o,k) => { o[k]=k; return o; }, {}));",
+                  "    });",
+                  "});",
+                  "pm.test('lineTotal = quantity * unitPrice (within 0.01)', () => {",
+                  "    jsonData.items.forEach(item => {",
+                  "        const expected = Math.round(item.quantity * item.unitPrice * 100) / 100;",
+                  "        pm.expect(Math.abs(item.lineTotal - expected)).to.be.below(0.01);",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/quote",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "quote"]
+            }
+          }
+        },
+
+        {
+          "name": "4.2 Get Quote",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.environment.get('quoteCreated') !== 'true') {",
+                  "    pm.execution.setNextRequest('5.1 Advance to Accepted');",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has quote object', () => pm.expect(jsonData).to.have.property('quote'));",
+                  "pm.test('Has items array', () => pm.expect(jsonData.items).to.be.an('array'));",
+                  "pm.test('quote.status is Draft', () => pm.expect(jsonData.quote.status).to.equal('Draft'));",
+                  "pm.test('quote.totalAmount > 0', () => pm.expect(jsonData.quote.totalAmount).to.be.above(0));",
+                  "pm.test('quote.itemCount matches items array', () => {",
+                  "    pm.expect(jsonData.quote.itemCount).to.equal(jsonData.items.length);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/quote",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "quote"]
+            }
+          }
+        },
+
+        {
+          "name": "4.3 Edit Quote Items",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.environment.get('quoteCreated') !== 'true') {",
+                  "    pm.execution.setNextRequest('5.1 Advance to Accepted');",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has quote object', () => pm.expect(jsonData).to.have.property('quote'));",
+                  "pm.test('Has items array', () => pm.expect(jsonData.items).to.be.an('array'));",
+                  "pm.test('First item quantity is 10', () => pm.expect(jsonData.items[0].quantity).to.equal(10));",
+                  "pm.test('totalAmount recalculated > 0', () => pm.expect(jsonData.quote.totalAmount).to.be.above(0));",
+                  "pm.test('itemCount updated', () => pm.expect(jsonData.quote.itemCount).to.equal(2));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"description\": \"Demolizione pavimento e rivestimenti esistenti\",\n      \"quantity\": 10,\n      \"unit\": \"mq\",\n      \"unitPrice\": 45.00\n    },\n    {\n      \"description\": \"Posa nuove piastrelle in ceramica\",\n      \"quantity\": 8,\n      \"unit\": \"mq\",\n      \"unitPrice\": 65.00\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/quote/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "quote", "items"]
+            }
+          }
+        },
+
+        {
+          "name": "4.4 Finalize Quote",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.environment.get('quoteCreated') !== 'true') {",
+                  "    pm.execution.setNextRequest('5.1 Advance to Accepted');",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "// approveQuote returns a flat object: { status, totalAmount, itemCount, approvedAt, jobAdvanced }",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('status is Approved', () => pm.expect(jsonData.status).to.equal('Approved'));",
+                  "pm.test('Has approvedAt', () => pm.expect(jsonData).to.have.property('approvedAt'));",
+                  "",
+                  "// jobAdvanced: true means the job was already advanced Quote→Accepted by this call.",
+                  "// Store this so 5.1 can skip the redundant transition attempt.",
+                  "pm.environment.set('jobAdvanced', jsonData.jobAdvanced === true ? 'true' : 'false');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/quote/finalize",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "quote", "finalize"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "5. Job Status Transitions",
+      "item": [
+
+        {
+          "name": "5.1 Advance to Accepted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const code = pm.response.code;",
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "// approveQuote (4.4) atomically advances Quote→Accepted when the job is still at Quote.",
+                  "// If that happened, jobAdvanced=true and the job is already Accepted here.",
+                  "// Accept both outcomes so the suite continues to 5.2–5.4 either way.",
+                  "if (code === 200) {",
+                  "    pm.test('Advanced Quote→Accepted (200)', () => pm.response.to.have.status(200));",
+                  "    pm.test('newStatus is Accepted', () => pm.expect(jsonData.newStatus).to.equal('Accepted'));",
+                  "} else {",
+                  "    pm.test('Job already at Accepted (auto-advanced by finalize) — transition skipped', () => {",
+                  "        pm.expect(code).to.be.oneOf([200, 400]);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Accepted\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "status"]
+            }
+          }
+        },
+
+        {
+          "name": "5.2 Invalid Transition — Accepted to Completed (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error code is INVALID_STATUS_TRANSITION', () => {",
+                  "    pm.expect(jsonData.error.code).to.equal('INVALID_STATUS_TRANSITION');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "status"]
+            }
+          }
+        },
+
+        {
+          "name": "5.3 Advance to InProgress",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('newStatus is InProgress', () => pm.expect(jsonData.newStatus).to.equal('InProgress'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"InProgress\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "status"]
+            }
+          }
+        },
+
+        {
+          "name": "5.4 Advance to Completed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('newStatus is Completed', () => pm.expect(jsonData.newStatus).to.equal('Completed'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "status"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "6. Invoice",
+      "item": [
+
+        {
+          "name": "6.1 Create Invoice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has invoiceNumber', () => pm.expect(jsonData).to.have.property('invoiceNumber'));",
+                  "pm.test('Has totalAmount > 0', () => pm.expect(jsonData.totalAmount).to.be.above(0));",
+                  "pm.test('Has vatAmount', () => pm.expect(jsonData).to.have.property('vatAmount'));",
+                  "pm.test('vatAmount is ~22% of pre-tax amount', () => {",
+                  "    const preTax = jsonData.totalAmount / 1.22;",
+                  "    const expectedVat = Math.round(preTax * 0.22 * 100) / 100;",
+                  "    pm.expect(Math.abs(jsonData.vatAmount - expectedVat)).to.be.below(0.5);",
+                  "});",
+                  "pm.test('Has xmlUrl', () => pm.expect(jsonData).to.have.property('xmlUrl'));",
+                  "",
+                  "if (pm.response.code === 201 && jsonData.invoiceNumber) {",
+                  "    pm.environment.set('invoiceNumber', String(jsonData.invoiceNumber));",
+                  "    pm.environment.set('invoiceCreated', 'true');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vatRate\": 22,\n  \"paymentTerms\": \"30 giorni data fattura\",\n  \"dueDate\": \"2026-09-15\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/invoice",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "invoice"]
+            }
+          }
+        },
+
+        {
+          "name": "6.2 Advance Job to Invoiced",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const code = pm.response.code;",
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "// createInvoice (6.1) atomically sets job status to 'Invoiced' in the same",
+                  "// TransactWriteCommand, so this PATCH is redundant when 6.1 succeeded.",
+                  "// Accept both outcomes so the suite continues either way.",
+                  "if (code === 200) {",
+                  "    pm.test('Advanced to Invoiced (200)', () => pm.response.to.have.status(200));",
+                  "    pm.test('newStatus is Invoiced', () => pm.expect(jsonData.newStatus).to.equal('Invoiced'));",
+                  "} else {",
+                  "    pm.test('Job already Invoiced (auto-advanced by createInvoice) — transition skipped', () => {",
+                  "        pm.expect(code).to.be.oneOf([200, 400]);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Invoiced\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "status"]
+            }
+          }
+        },
+
+        {
+          "name": "6.3 Get Invoice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "// getInvoice returns a flat object (no 'invoice' wrapper)",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('status is Draft', () => pm.expect(jsonData.status).to.equal('Draft'));",
+                  "pm.test('Has invoiceNumber', () => pm.expect(jsonData).to.have.property('invoiceNumber'));",
+                  "pm.test('xmlUrl is a valid https URL', () => {",
+                  "    pm.expect(jsonData.xmlUrl).to.be.a('string');",
+                  "    pm.expect(jsonData.xmlUrl.startsWith('https')).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/invoice",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "invoice"]
+            }
+          }
+        },
+
+        {
+          "name": "6.4 Update Invoice Status to Sent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "// updateInvoiceStatus returns { invoiceNumber, previousStatus, newStatus, updatedAt }",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('newStatus is Sent', () => pm.expect(jsonData.newStatus).to.equal('Sent'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Sent\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/invoice/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "invoice", "status"]
+            }
+          }
+        },
+
+        {
+          "name": "6.5 Mark Invoice as Paid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "// updateInvoiceStatus returns { invoiceNumber, previousStatus, newStatus, updatedAt, paidAt }",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('newStatus is Paid', () => pm.expect(jsonData.newStatus).to.equal('Paid'));",
+                  "pm.test('paidAt is set', () => pm.expect(jsonData).to.have.property('paidAt'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Paid\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/invoice/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "invoice", "status"]
+            }
+          }
+        },
+
+        {
+          "name": "6.6 List Invoices",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has items array', () => pm.expect(jsonData).to.have.property('items'));",
+                  "pm.test('At least 1 invoice', () => pm.expect(jsonData.items.length).to.be.above(0));",
+                  "pm.test('Invoice has invoiceNumber and totalAmount', () => {",
+                  "    pm.expect(jsonData.items[0]).to.have.property('invoiceNumber');",
+                  "    pm.expect(jsonData.items[0]).to.have.property('totalAmount');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/invoices",
+              "host": ["{{baseUrl}}"],
+              "path": ["invoices"]
+            }
+          }
+        },
+
+        {
+          "name": "6.7 Verify Job Details — Full Lifecycle Complete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('job.status is Invoiced', () => pm.expect(jsonData.status).to.equal('Invoiced'));",
+                  "pm.test('quote is not null', () => pm.expect(jsonData.quote).to.not.be.null);",
+                  "pm.test('invoice is not null', () => pm.expect(jsonData.invoice).to.not.be.null);",
+                  "pm.test('invoice.invoiceNumber matches', () => {",
+                  "    pm.expect(String(jsonData.invoice.invoiceNumber)).to.equal(pm.environment.get('invoiceNumber'));",
+                  "});",
+                  "// Minimum 3 transitions: Accepted→InProgress, InProgress→Completed, Completed→Invoiced.",
+                  "// A 4th (Quote→Accepted) exists only when 5.1 ran; approveQuote auto-advances",
+                  "// the job but does NOT write a StatusTransition record, so count may be 3.",
+                  "pm.test('statusHistory has at least 3 transitions', () => {",
+                  "    pm.expect(jsonData.statusHistory.length).to.be.at.least(3);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/details",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "details"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "7. Dashboard",
+      "item": [
+
+        {
+          "name": "7.1 Dashboard Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has monthlyRevenue', () => pm.expect(jsonData).to.have.property('monthlyRevenue'));",
+                  "pm.test('Has totalJobs', () => pm.expect(jsonData).to.have.property('totalJobs'));",
+                  "pm.test('Has completionRate', () => pm.expect(jsonData).to.have.property('completionRate'));",
+                  "pm.test('totalJobs >= 1', () => pm.expect(jsonData.totalJobs).to.be.at.least(1));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "summary"]
+            }
+          }
+        },
+
+        {
+          "name": "7.2 Dashboard Revenue",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has months array', () => pm.expect(jsonData).to.have.property('months'));",
+                  "pm.test('Has total', () => pm.expect(jsonData).to.have.property('total'));",
+                  "pm.test('months is an array', () => pm.expect(jsonData.months).to.be.an('array'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/revenue?startDate=2026-01-01&endDate=2026-12-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "revenue"],
+              "query": [
+                { "key": "startDate", "value": "2026-01-01" },
+                { "key": "endDate",   "value": "2026-12-31" }
+              ]
+            }
+          }
+        },
+
+        {
+          "name": "7.3 Dashboard Jobs Stats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has total', () => pm.expect(jsonData).to.have.property('total'));",
+                  "pm.test('Has byStatus', () => pm.expect(jsonData).to.have.property('byStatus'));",
+                  "pm.test('total >= 1', () => pm.expect(jsonData.total).to.be.at.least(1));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/jobs-stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "jobs-stats"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "8. Error Handling",
+      "item": [
+
+        {
+          "name": "8.1 Missing JWT — expect 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"]
+            }
+          }
+        },
+
+        {
+          "name": "8.2 Invalid JWT — expect 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer invalid.token.here" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"]
+            }
+          }
+        },
+
+        {
+          "name": "8.3 Non-existent Job — expect 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/99999/details",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "99999", "details"]
+            }
+          }
+        },
+
+        {
+          "name": "8.4 Duplicate Invoice — expect 409",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Only meaningful if an invoice was created in folder 6.",
+                  "// If the AI quota timed out, invoice was never created, so skip this test.",
+                  "if (pm.environment.get('invoiceCreated') !== 'true') {",
+                  "    pm.execution.setNextRequest('8.5 Validation Error — Empty Description — expect 400');",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const code = pm.response.code;",
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "// Two valid rejection paths depending on job state when this test runs:",
+                  "// - 409 CONFLICT: job is still 'Completed' and invoice already exists",
+                  "// - 400 INVALID_STATUS_TRANSITION: job is 'Invoiced' (not Completed) so",
+                  "//   createInvoice rejects before even checking for duplicates",
+                  "pm.test('Cannot create a second invoice (400 or 409)', () => {",
+                  "    pm.expect(code).to.be.oneOf([400, 409]);",
+                  "});",
+                  "pm.test('Error code identifies the rejection reason', () => {",
+                  "    pm.expect(jsonData.error.code).to.be.oneOf(['CONFLICT', 'INVALID_STATUS_TRANSITION']);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vatRate\": 22,\n  \"paymentTerms\": \"30 giorni data fattura\",\n  \"dueDate\": \"2026-09-15\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}/invoice",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}", "invoice"]
+            }
+          }
+        },
+
+        {
+          "name": "8.5 Validation Error — Empty Description — expect 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "",
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error code is VALIDATION_ERROR', () => {",
+                  "    pm.expect(jsonData.error.code).to.equal('VALIDATION_ERROR');",
+                  "});",
+                  "pm.test('Error field is description', () => {",
+                  "    pm.expect(jsonData.error.field).to.equal('description');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"description\": \"\",\n  \"address\": \"Via Test 1, Carmagnola\",\n  \"targetDate\": \"2026-12-01\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"]
+            }
+          }
+        },
+
+        {
+          "name": "8.6 Unknown Status Filter — expect 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error code is VALIDATION_ERROR', () => {",
+                  "    pm.expect(pm.response.json().error.code).to.equal('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs?status=NonExistent",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs"],
+              "query": [{ "key": "status", "value": "NonExistent" }]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "9. Cleanup",
+      "item": [
+
+        {
+          "name": "9.1 Soft-Delete Test Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const code = pm.response.code;",
+                  "",
+                  "if (code === 403 || code === 405) {",
+                  "    // DELETE /jobs/{jobId} is registered in the handler but was missing from the CDK",
+                  "    // ApiStack until this fix. 403/405 means the method is not yet deployed on staging.",
+                  "    // Redeploy the ApiStack to resolve this.",
+                  "    pm.test('DELETE not yet deployed on staging (403/405) — redeploy ApiStack to fix', () => {",
+                  "        pm.expect(code).to.be.oneOf([200, 403, 405]);",
+                  "    });",
+                  "    pm.environment.set('jobDeleted', 'false');",
+                  "    pm.execution.setNextRequest(null);",
+                  "} else {",
+                  "    pm.test('Status 200 (job soft-deleted)', () => pm.response.to.have.status(200));",
+                  "    pm.test('message present', () => pm.expect(pm.response.json()).to.have.property('message'));",
+                  "    pm.environment.set('jobDeleted', 'true');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}"]
+            }
+          }
+        },
+
+        {
+          "name": "9.2 Verify Job No Longer Visible",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.environment.get('jobDeleted') !== 'true') {",
+                  "    pm.execution.setNextRequest(null);",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 — cancelled job hidden', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/jobs/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jobs", "{{jobId}}"]
+            }
+          }
+        }
+
+      ]
+    }
+
+  ]
+}

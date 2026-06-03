@@ -1,0 +1,756 @@
+{
+  "aggregate": {
+    "counters": {
+      "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 450,
+      "vusers.created": 450,
+      "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 450,
+      "vusers.failed": 450
+    },
+    "rates": {},
+    "firstCounterAt": 1780473069701,
+    "lastCounterAt": 1780473518701,
+    "firstMetricAt": 1780473069701,
+    "lastMetricAt": 1780473518701,
+    "period": 1780473510000,
+    "summaries": {},
+    "histograms": {}
+  },
+  "intermediate": [
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 1,
+        "vusers.created": 1,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 1,
+        "vusers.failed": 1
+      },
+      "rates": {},
+      "firstCounterAt": 1780473069701,
+      "lastCounterAt": 1780473069705,
+      "firstMetricAt": 1780473069701,
+      "lastMetricAt": 1780473069705,
+      "period": "1780473060000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473070700,
+      "lastCounterAt": 1780473079701,
+      "firstMetricAt": 1780473070700,
+      "lastMetricAt": 1780473079701,
+      "period": "1780473070000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473080700,
+      "lastCounterAt": 1780473089701,
+      "firstMetricAt": 1780473080700,
+      "lastMetricAt": 1780473089701,
+      "period": "1780473080000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473090700,
+      "lastCounterAt": 1780473099701,
+      "firstMetricAt": 1780473090700,
+      "lastMetricAt": 1780473099701,
+      "period": "1780473090000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473100700,
+      "lastCounterAt": 1780473109701,
+      "firstMetricAt": 1780473100700,
+      "lastMetricAt": 1780473109701,
+      "period": "1780473100000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473110700,
+      "lastCounterAt": 1780473119701,
+      "firstMetricAt": 1780473110700,
+      "lastMetricAt": 1780473119701,
+      "period": "1780473110000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473120700,
+      "lastCounterAt": 1780473129701,
+      "firstMetricAt": 1780473120700,
+      "lastMetricAt": 1780473129701,
+      "period": "1780473120000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473130700,
+      "lastCounterAt": 1780473139701,
+      "firstMetricAt": 1780473130700,
+      "lastMetricAt": 1780473139701,
+      "period": "1780473130000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473140700,
+      "lastCounterAt": 1780473149701,
+      "firstMetricAt": 1780473140700,
+      "lastMetricAt": 1780473149701,
+      "period": "1780473140000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473150700,
+      "lastCounterAt": 1780473159701,
+      "firstMetricAt": 1780473150700,
+      "lastMetricAt": 1780473159701,
+      "period": "1780473150000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473160700,
+      "lastCounterAt": 1780473169701,
+      "firstMetricAt": 1780473160700,
+      "lastMetricAt": 1780473169701,
+      "period": "1780473160000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473170700,
+      "lastCounterAt": 1780473179701,
+      "firstMetricAt": 1780473170700,
+      "lastMetricAt": 1780473179701,
+      "period": "1780473170000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473180700,
+      "lastCounterAt": 1780473189701,
+      "firstMetricAt": 1780473180700,
+      "lastMetricAt": 1780473189701,
+      "period": "1780473180000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473190700,
+      "lastCounterAt": 1780473199701,
+      "firstMetricAt": 1780473190700,
+      "lastMetricAt": 1780473199701,
+      "period": "1780473190000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473200700,
+      "lastCounterAt": 1780473209701,
+      "firstMetricAt": 1780473200700,
+      "lastMetricAt": 1780473209701,
+      "period": "1780473200000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473210700,
+      "lastCounterAt": 1780473219701,
+      "firstMetricAt": 1780473210700,
+      "lastMetricAt": 1780473219701,
+      "period": "1780473210000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473220700,
+      "lastCounterAt": 1780473229701,
+      "firstMetricAt": 1780473220700,
+      "lastMetricAt": 1780473229701,
+      "period": "1780473220000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473230700,
+      "lastCounterAt": 1780473239701,
+      "firstMetricAt": 1780473230700,
+      "lastMetricAt": 1780473239701,
+      "period": "1780473230000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473240700,
+      "lastCounterAt": 1780473249701,
+      "firstMetricAt": 1780473240700,
+      "lastMetricAt": 1780473249701,
+      "period": "1780473240000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473250700,
+      "lastCounterAt": 1780473259701,
+      "firstMetricAt": 1780473250700,
+      "lastMetricAt": 1780473259701,
+      "period": "1780473250000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473260700,
+      "lastCounterAt": 1780473269701,
+      "firstMetricAt": 1780473260700,
+      "lastMetricAt": 1780473269701,
+      "period": "1780473260000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473270700,
+      "lastCounterAt": 1780473279701,
+      "firstMetricAt": 1780473270700,
+      "lastMetricAt": 1780473279701,
+      "period": "1780473270000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473280700,
+      "lastCounterAt": 1780473289701,
+      "firstMetricAt": 1780473280700,
+      "lastMetricAt": 1780473289701,
+      "period": "1780473280000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473290700,
+      "lastCounterAt": 1780473299701,
+      "firstMetricAt": 1780473290700,
+      "lastMetricAt": 1780473299701,
+      "period": "1780473290000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473300700,
+      "lastCounterAt": 1780473309701,
+      "firstMetricAt": 1780473300700,
+      "lastMetricAt": 1780473309701,
+      "period": "1780473300000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473310700,
+      "lastCounterAt": 1780473319701,
+      "firstMetricAt": 1780473310700,
+      "lastMetricAt": 1780473319701,
+      "period": "1780473310000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473320700,
+      "lastCounterAt": 1780473329701,
+      "firstMetricAt": 1780473320700,
+      "lastMetricAt": 1780473329701,
+      "period": "1780473320000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473330700,
+      "lastCounterAt": 1780473339701,
+      "firstMetricAt": 1780473330700,
+      "lastMetricAt": 1780473339701,
+      "period": "1780473330000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473340700,
+      "lastCounterAt": 1780473349701,
+      "firstMetricAt": 1780473340700,
+      "lastMetricAt": 1780473349701,
+      "period": "1780473340000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473350700,
+      "lastCounterAt": 1780473359701,
+      "firstMetricAt": 1780473350700,
+      "lastMetricAt": 1780473359701,
+      "period": "1780473350000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473360700,
+      "lastCounterAt": 1780473369701,
+      "firstMetricAt": 1780473360700,
+      "lastMetricAt": 1780473369701,
+      "period": "1780473360000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473370700,
+      "lastCounterAt": 1780473379701,
+      "firstMetricAt": 1780473370700,
+      "lastMetricAt": 1780473379701,
+      "period": "1780473370000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473380700,
+      "lastCounterAt": 1780473389701,
+      "firstMetricAt": 1780473380700,
+      "lastMetricAt": 1780473389701,
+      "period": "1780473380000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473390700,
+      "lastCounterAt": 1780473399701,
+      "firstMetricAt": 1780473390700,
+      "lastMetricAt": 1780473399701,
+      "period": "1780473390000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473400700,
+      "lastCounterAt": 1780473409701,
+      "firstMetricAt": 1780473400700,
+      "lastMetricAt": 1780473409701,
+      "period": "1780473400000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473410700,
+      "lastCounterAt": 1780473419701,
+      "firstMetricAt": 1780473410700,
+      "lastMetricAt": 1780473419701,
+      "period": "1780473410000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473420700,
+      "lastCounterAt": 1780473429701,
+      "firstMetricAt": 1780473420700,
+      "lastMetricAt": 1780473429701,
+      "period": "1780473420000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473430700,
+      "lastCounterAt": 1780473439701,
+      "firstMetricAt": 1780473430700,
+      "lastMetricAt": 1780473439701,
+      "period": "1780473430000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473440700,
+      "lastCounterAt": 1780473449701,
+      "firstMetricAt": 1780473440700,
+      "lastMetricAt": 1780473449701,
+      "period": "1780473440000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473450700,
+      "lastCounterAt": 1780473459701,
+      "firstMetricAt": 1780473450700,
+      "lastMetricAt": 1780473459701,
+      "period": "1780473450000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473460700,
+      "lastCounterAt": 1780473469701,
+      "firstMetricAt": 1780473460700,
+      "lastMetricAt": 1780473469701,
+      "period": "1780473460000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473470700,
+      "lastCounterAt": 1780473479701,
+      "firstMetricAt": 1780473470700,
+      "lastMetricAt": 1780473479701,
+      "period": "1780473470000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473480700,
+      "lastCounterAt": 1780473489701,
+      "firstMetricAt": 1780473480700,
+      "lastMetricAt": 1780473489701,
+      "period": "1780473480000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473490700,
+      "lastCounterAt": 1780473499701,
+      "firstMetricAt": 1780473490700,
+      "lastMetricAt": 1780473499701,
+      "period": "1780473490000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 10,
+        "vusers.created": 10,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 10,
+        "vusers.failed": 10
+      },
+      "rates": {},
+      "firstCounterAt": 1780473500700,
+      "lastCounterAt": 1780473509701,
+      "firstMetricAt": 1780473500700,
+      "lastMetricAt": 1780473509701,
+      "period": "1780473500000",
+      "summaries": {},
+      "histograms": {}
+    },
+    {
+      "counters": {
+        "vusers.created_by_name.POST /jobs/{jobId}/quote/generate — AI generation (Lambda async)": 9,
+        "vusers.created": 9,
+        "errors.Invalid URL - /tmp/ai-fargate-sync.yml/tmp/ai-fargate-sync.yml/jobs": 9,
+        "vusers.failed": 9
+      },
+      "rates": {},
+      "firstCounterAt": 1780473510700,
+      "lastCounterAt": 1780473518701,
+      "firstMetricAt": 1780473510700,
+      "lastMetricAt": 1780473518701,
+      "period": "1780473510000",
+      "summaries": {},
+      "histograms": {}
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import { AuthStack } from '../lib/stacks/auth-stack';
 import { ApiStack } from '../lib/stacks/api-stack';
 import { NotificationStack } from '../lib/stacks/notification-stack';
 import { SchedulingStack } from '../lib/stacks/scheduling-stack';
+import { BenchmarkStack } from '../lib/stacks/benchmark-stack';
 
 const app = new cdk.App();
 
@@ -63,5 +64,13 @@ const schedulingStack = new SchedulingStack(app, id('SchedulingStack'), {
 });
 schedulingStack.addDependency(notificationStack);
 schedulingStack.addDependency(apiStack);
+
+// ── BenchmarkStack ───────────────────────────────── (deploy only for RQ3 benchmarking)
+// Imports staging DynamoDB table + S3 bucket by name — no new data resources created.
+// Deploy:  npx cdk deploy CantiereSnap-BenchmarkStack --context env=benchmark
+// Destroy: npx cdk destroy CantiereSnap-BenchmarkStack --context env=benchmark --force
+if (env === 'benchmark') {
+  new BenchmarkStack(app, 'CantiereSnap-BenchmarkStack', { env: awsEnv });
+}
 
 app.synth();
