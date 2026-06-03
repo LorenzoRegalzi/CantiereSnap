@@ -56,7 +56,7 @@ export default function QuoteGenerator({ jobId, jobDescription, onGenerated }: Q
         const { data } = await apiClient.get<{ quote: Quote; items: QuoteItem[] }>(
           `/jobs/${jobId}/quote`
         );
-        if (data.quote.status === 'processing') continue;
+        if ((data.quote.status as string) === 'processing') continue;
         if (data.quote.status === 'failed') {
           setAlert({
             variant: 'error',

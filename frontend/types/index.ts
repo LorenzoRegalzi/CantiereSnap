@@ -49,7 +49,7 @@ export interface QuoteItem {
 
 export interface Quote {
   jobId?: string;
-  status: 'Draft' | 'Approved' | 'Sent';
+  status: 'Draft' | 'Approved' | 'Sent' | 'processing' | 'failed';
   totalAmount: number;
   currency?: string;
   generationTimeMs?: number;

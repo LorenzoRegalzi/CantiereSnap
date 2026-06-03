@@ -5,6 +5,7 @@ import { ApiStack } from '../lib/stacks/api-stack';
 import { NotificationStack } from '../lib/stacks/notification-stack';
 import { SchedulingStack } from '../lib/stacks/scheduling-stack';
 import { BenchmarkStack } from '../lib/stacks/benchmark-stack';
+import { FrontendStack } from '../lib/stacks/frontend-stack';
 
 const app = new cdk.App();
 
@@ -64,6 +65,17 @@ const schedulingStack = new SchedulingStack(app, id('SchedulingStack'), {
 });
 schedulingStack.addDependency(notificationStack);
 schedulingStack.addDependency(apiStack);
+
+// ── FrontendStack ────────────────────────────────────────────────── (staging + production)
+// S3 bucket + CloudFront distribution for the Next.js static export.
+// Deploy:  npx cdk deploy CantiereSnap-FrontendStack-staging --context env=staging
+// Outputs: CloudFrontUrl, S3BucketName, DistributionId
+if (env !== 'benchmark') {
+  new FrontendStack(app, id('FrontendStack'), {
+    env: awsEnv,
+    environment: env,
+  });
+}
 
 // ── BenchmarkStack ───────────────────────────────── (deploy only for RQ3 benchmarking)
 // Imports staging DynamoDB table + S3 bucket by name — no new data resources created.
