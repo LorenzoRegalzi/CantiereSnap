@@ -103,7 +103,7 @@ function LoginForm() {
             <HardHatIcon />
           </div>
           <h1 className="text-2xl font-bold text-brand-primary">CantiereSnap</h1>
-          <p className="text-sm text-brand-muted">Gestione lavori per artigiani</p>
+          <p className="text-sm text-brand-muted">Gestione lavori per artigiani edili</p>
         </div>
 
         {/* Alert */}
