@@ -24,6 +24,34 @@ export class FrontendStack extends cdk.Stack {
       autoDeleteObjects: !isProd,
     });
 
+    // ── CloudFront Function — URL rewrite for Next.js static export ──────────
+    // Next.js with trailingSlash:true exports pages as /path/index.html.
+    // S3 (private OAC bucket) has no directory-index support, so CloudFront
+    // must rewrite /path and /path/ → /path/index.html before hitting S3.
+    // Without this, S3 returns 403 for every sub-page, breaking direct navigation.
+    const urlRewriteFn = new cloudfront.Function(this, 'UrlRewriteFn', {
+      functionName: `cantieresnap-url-rewrite-${props.environment}`,
+      code: cloudfront.FunctionCode.fromInline(`
+function handler(event) {
+  var request = event.request;
+  var uri = request.uri;
+
+  // Already points to a file (has an extension) — pass through unchanged
+  if (uri.includes('.')) return request;
+
+  // Append trailing slash then index.html
+  if (uri.endsWith('/')) {
+    request.uri = uri + 'index.html';
+  } else {
+    request.uri = uri + '/index.html';
+  }
+
+  return request;
+}
+      `.trim()),
+      runtime: cloudfront.FunctionRuntime.JS_2_0,
+    });
+
     // ── Cache policies ───────────────────────────────────────────────────────
 
     // HTML files: use the built-in CACHING_DISABLED policy (gzip flags not allowed with TTL=0)
@@ -43,15 +71,20 @@ export class FrontendStack extends cdk.Stack {
     const distribution = new cloudfront.Distribution(this, 'Distribution', {
       comment: `CantiereSnap frontend (${props.environment})`,
 
-      // Default origin: S3 bucket via OAC (bucket policy added automatically)
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cachePolicy: htmlCachePolicy,
         compress: true,
+        functionAssociations: [
+          {
+            function: urlRewriteFn,
+            eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+          },
+        ],
       },
 
-      // /_next/static/* and /_next/image/* — content-hashed, cache 1 year
+      // /_next/* — content-hashed filenames, safe to cache 1 year; no rewrite needed
       additionalBehaviors: {
         '/_next/*': {
           origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
@@ -63,8 +96,8 @@ export class FrontendStack extends cdk.Stack {
 
       defaultRootObject: 'index.html',
 
-      // SPA routing: S3 returns 403 (key not found with OAC) → serve index.html
-      // 404 fallback included for safety
+      // Safety net: if S3 still returns 403/404 (e.g. genuinely missing asset),
+      // fall back to the SPA shell so Next.js router can show its own 404 page.
       errorResponses: [
         {
           httpStatus: 403,
@@ -80,11 +113,7 @@ export class FrontendStack extends cdk.Stack {
         },
       ],
 
-      // Cheapest price class — Europe + North America only
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
-
-      // Default CloudFront certificate (*.cloudfront.net) — no custom domain
-      // httpVersion defaults to HTTP2
     });
 
     // ── Outputs ──────────────────────────────────────────────────────────────
