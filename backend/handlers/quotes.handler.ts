@@ -155,24 +155,45 @@ function buildPdf(jobId: number, totalAmount: number, items: LineItem[], clientN
     doc.text(`Cliente: ${clientName}`);
     doc.moveDown();
 
+    const startX = doc.page.margins.left;
+    const columns: { x: number; width: number; align: 'left' | 'right' }[] = [
+      { x: startX, width: 25, align: 'left' }, // N°
+      { x: startX + 25, width: 215, align: 'left' }, // Descrizione
+      { x: startX + 240, width: 40, align: 'right' }, // Qta
+      { x: startX + 280, width: 35, align: 'right' }, // U.M.
+      { x: startX + 315, width: 60, align: 'right' }, // Pr.Unit
+      { x: startX + 375, width: 70, align: 'right' }, // Totale
+    ];
+
+    function drawRow(cells: string[]): void {
+      const y = doc.y;
+      let rowHeight = 0;
+      for (let i = 0; i < columns.length; i++) {
+        const h = doc.heightOfString(cells[i], { width: columns[i].width, align: columns[i].align });
+        if (h > rowHeight) rowHeight = h;
+      }
+      for (let i = 0; i < columns.length; i++) {
+        doc.text(cells[i], columns[i].x, y, { width: columns[i].width, align: columns[i].align });
+      }
+      doc.x = startX;
+      doc.y = y + rowHeight;
+    }
+
     doc.font('Helvetica-Bold').fontSize(9);
-    doc.text('N°', 50, doc.y, { width: 25, continued: true });
-    doc.text('Descrizione', { width: 215, continued: true });
-    doc.text('Qta', { width: 40, continued: true, align: 'right' });
-    doc.text('U.M.', { width: 35, continued: true, align: 'right' });
-    doc.text('Pr.Unit', { width: 60, continued: true, align: 'right' });
-    doc.text('Totale', { width: 70, align: 'right' });
+    drawRow(['N°', 'Descrizione', 'Qta', 'U.M.', 'Pr.Unit', 'Totale']);
     doc.moveDown(0.3);
 
     doc.font('Helvetica').fontSize(9);
     for (const item of items) {
-      const y = doc.y;
-      doc.text(String(item.seq), 50, y, { width: 25, continued: true });
-      doc.text(item.description, { width: 215, continued: true });
-      doc.text(item.quantity.toFixed(2), { width: 40, continued: true, align: 'right' });
-      doc.text(item.unit, { width: 35, continued: true, align: 'right' });
-      doc.text(item.unitPrice.toFixed(2), { width: 60, continued: true, align: 'right' });
-      doc.text(item.lineTotal.toFixed(2), { width: 70, align: 'right' });
+      drawRow([
+        String(item.seq),
+        item.description,
+        item.quantity.toFixed(2),
+        item.unit,
+        item.unitPrice.toFixed(2),
+        item.lineTotal.toFixed(2),
+      ]);
+      doc.moveDown(0.2);
     }
 
     doc.moveDown();
